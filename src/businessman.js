@@ -1,41 +1,34 @@
-import o from 'obseriot'
+import worker from './worker'
+import install from './install'
+import dispatch from './dispatch'
+import subscribe from './subscribe'
 
-var businessman = {}
+let businessman = {},
+    businessmanWoker = null
 
-Object.defineProperties( businessman, {
-    goodmorning: {
-        value: function ( e = {}, cb ) {
-            o.listen( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+const api = {
+    install: function ( path ) {
+        install( path, businessmanWoker )
     },
-    hello: {
-        value: function ( e = {}, ...arg ) {
-            o.notify( e, arg )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+    dispatch: function ( action, payload ) {
+        dispatch( action, payload, businessmanWoker )
     },
-    goodnight: {
-        value: function ( e = {}, cb ) {
-            if ( cb ) o.remove( e, cb )
-            else o.remove( e )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    },
-    sheep: {
-        value: function ( e = {}, cb ) {
-            o.once( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+    subscribe: function ( store, cb ) {
+        subscribe( store, cb )
     }
-} )
+}
+
+for ( let prop in api ) {
+    Object.defineProperties( businessman, {
+        [ prop ]: {
+            value: api[ prop ],
+            enumerable: false,
+            writable: false,
+            configurable: false
+        }
+    } )
+}
+
+export let worker = worker
 
 export default businessman
