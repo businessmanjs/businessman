@@ -6,8 +6,8 @@ let worker = {},
 const api = {
     start: function () {
         onmessage = e => {
-            let actiontype = e[ 1 ],
-                payload = e[ 2 ]
+            let actiontype = e[ 0 ],
+                payload = e[ 1 ]
             action[ actiontype ]( payload )
         }
         postMessage( { type: 'init', payload: { store: store, action: action } } )
