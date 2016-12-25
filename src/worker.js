@@ -16,8 +16,7 @@ const api = {
         Object.defineProperties( store, {
             [ conf.type ]: {
                 value: conf.state,
-                get: () => conf.state
-                },
+                get: () => conf.state,
                 set: state => {
                     conf.state = state
                     postMessage( { type: conf.type, payload: conf.state } )
