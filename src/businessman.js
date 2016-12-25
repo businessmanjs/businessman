@@ -13,8 +13,8 @@ const api = {
     dispatch: function ( action, payload ) {
         dispatch( action, payload, businessmanWoker )
     },
-    subscribe: function ( store, cb ) {
-        subscribe( store, cb )
+    subscribe: function ( data, cb ) {
+        subscribe( data, cb )
     }
 }
 

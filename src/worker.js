@@ -10,18 +10,32 @@ const api = {
                 payload = e[ 2 ]
             action[ actiontype ]( payload )
         }
+        postMessage( { type: 'init', payload: { store: store, action: action } } )
     },
-    store: function ( conf ) {
+    createStore: function ( conf ) {
         Object.defineProperties( store, {
-            [ store.type ]: {
-                value: store.state,
-                get: function () {
-                    return store.state
+            [ conf.type ]: {
+                value: conf.state,
+                get: () => conf.state
                 },
-                set: function ( state ) {
-                    store.state = state
-                    postMessage( store )
+                set: state => {
+                    conf.state = state
+                    postMessage( { type: conf.type, payload: conf.state } )
                 }
+            }
+        } )
+    },
+    createMutation: function ( conf ) {
+        Object.defineProperties( mutation, {
+            [ conf.type ]: {
+                value: conf.handler
+            }
+        } )
+    },
+    createAction: function ( conf ) {
+        Object.defineProperties( action, {
+            [ conf.type ]: {
+                value: conf.handler
             }
         } )
     }
