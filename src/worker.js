@@ -15,7 +15,7 @@ const api = {
     commit: function ( e ) {
         let mutationtype = e[ 0 ],
             payload = e[ 1 ]
-        mutation[ mutationtype ]( payload )
+        mutation[ mutationtype ]( store, payload )
     },
     createStore: function ( conf ) {
         Object.defineProperties( store, {
