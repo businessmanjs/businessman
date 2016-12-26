@@ -1,5 +1,5 @@
 import Store from './store'
-import defineFreezeProperties from './util'
+import { defineFreezeProperties } from './util'
 import { INIT } from './types'
 
 let worker = {},

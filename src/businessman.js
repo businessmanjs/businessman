@@ -2,7 +2,7 @@ import worker from './worker'
 import install from './install'
 import dispatch from './dispatch'
 import subscribe from './subscribe'
-import defineFreezeProperties from './util'
+import { defineFreezeProperties } from './util'
 import { INIT } from './types'
 
 let businessman = {},
@@ -14,7 +14,9 @@ const api = {
         businessmanWoker = install( path, businessmanWoker )
     },
     dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
-    subscribe: ( type, cb ) => subscribe( type, cb )
+    subscribe: ( type, cb ) => subscribe( type, cb ),
+    worker: worker,
+    stores: stores
 }
 
 for ( let prop in api ) {
@@ -32,8 +34,7 @@ subscribe( INIT, ( data ) => {
             }
         }
     } )
+    businessman.stores = stores
 } )
-
-export { worker, stores }
 
 export default businessman

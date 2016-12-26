@@ -1,3 +1,3 @@
-export let types = {
-    INIT: 'init'
-}
+const INIT = 'init'
+
+export { INIT }
