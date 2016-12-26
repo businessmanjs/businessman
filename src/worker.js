@@ -54,6 +54,4 @@ for ( let prop in api ) {
     } )
 }
 
-export let action = action
-
 export default worker
