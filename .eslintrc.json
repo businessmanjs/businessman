@@ -11,7 +11,8 @@
     "globals": {
         "onmessage": true,
         "describe": true,
-        "it": true
+        "it": true,
+        "expect": true
     },
     "rules": {
         "indent": [

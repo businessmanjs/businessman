@@ -11,10 +11,12 @@ module.exports = function ( config ) {
         files: [
             'node_modules/expect.js/index.js',
             'dist/businessman.js',
-            'dist/sample-worker.js',
             'test/businessman.js'
         ],
-        browsers: [ 'Chrome', 'Firefox' ],
+        proxies: {
+            '/dist/': 'http://localhost:9000/dist/'
+        },
+        browsers: [ 'Chrome' ],
         reporters: [ 'mocha' ],
         singleRun: true
     } )

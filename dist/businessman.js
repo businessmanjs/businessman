@@ -55,11 +55,11 @@ var Store = function Store ( opt ) {
 };
 
 Store.prototype.commit = function commit ( type, payload ) {
-    this.mutations[ type ]( payload );
+    this.mutations[ type ]( this, payload );
 };
 
 Store.prototype.dispatch = function dispatch ( type, payload ) {
-    this.actions[ type ]( payload );
+    this.actions[ type ]( this, payload );
 };
 
 var observable = function(el) {
@@ -237,7 +237,7 @@ var api$1 = {
     registerStore: function (config) {
         var store = new Store( config ),
             type = store.type;
-        if ( type in stores$1 ) {
+        if ( ! ( type in stores$1 ) ) {
             stores$1[ type ] = store;
             forFront.push( {
                 type: type,
@@ -254,6 +254,7 @@ for ( var prop$1 in api$1 ) {
 var install = function ( path, worker ) {
     try {
         worker = new Worker( path );
+        worker.postMessage( 'start' );
         worker.onmessage = function ( data ) { return trigger( data ); };
         return worker
     } catch ( e ) {
