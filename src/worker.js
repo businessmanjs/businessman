@@ -19,7 +19,7 @@ const api = {
     registerStore: config => {
         let store = new Store( config ),
             type = store.type
-        if ( type in stores ) {
+        if ( ! ( type in stores ) ) {
             stores[ type ] = store
             forFront.push( {
                 type: type,
