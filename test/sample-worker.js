@@ -11,7 +11,7 @@ worker.registerStore( {
         }
     },
     actions: {
-        actions: ( store, num = 1 ) => {
+        increment: ( store, num = 1 ) => {
             store.commit( 'increment', num )
         }
     }

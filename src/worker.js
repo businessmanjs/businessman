@@ -1,4 +1,4 @@
-import Store from './store'
+import Store from './Store'
 import { defineFreezeProperties } from './util'
 import { INIT } from './types'
 
@@ -9,9 +9,9 @@ let worker = {},
 const api = {
     start: () => {
         onmessage = e => {
-            let storeType = e[ 0 ],
-                actionType = e[ 1 ],
-                payload = e[ 2 ]
+            let storeType = e.data[ 0 ],
+                actionType = e.data[ 1 ],
+                payload = e.data[ 2 ]
             stores[ storeType ].dispatch( actionType, payload )
         }
         postMessage( { type: INIT, payload: { stores: forFront } } )
