@@ -1,41 +1,40 @@
-import o from 'obseriot'
+import worker from './worker'
+import install from './install'
+import dispatch from './dispatch'
+import subscribe from './subscribe'
+import { defineFreezeProperties } from './util'
+import { INIT } from './types'
 
-var businessman = {}
+let businessman = {},
+    businessmanWoker = null,
+    stores = {}
 
-Object.defineProperties( businessman, {
-    goodmorning: {
-        value: function ( e = {}, cb ) {
-            o.listen( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+const api = {
+    install: ( path ) => {
+        businessmanWoker = install( path, businessmanWoker )
     },
-    hello: {
-        value: function ( e = {}, ...arg ) {
-            o.notify( e, arg )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    },
-    goodnight: {
-        value: function ( e = {}, cb ) {
-            if ( cb ) o.remove( e, cb )
-            else o.remove( e )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    },
-    sheep: {
-        value: function ( e = {}, cb ) {
-            o.once( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    }
+    dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
+    subscribe: ( type, cb ) => subscribe( type, cb ),
+    worker: worker,
+    stores: stores
+}
+
+for ( let prop in api ) {
+    defineFreezeProperties( businessman, prop, api[ prop ] )
+}
+
+subscribe( INIT, ( data ) => {
+    data.stores.map( ( store ) => {
+        stores[ store.type ] = {
+            dispatch: ( actionType, payload ) => {
+                dispatch( store.type, actionType, payload, businessmanWoker )
+            },
+            subscribe: ( type, cb ) => {
+                subscribe( type, cb )
+            }
+        }
+    } )
+    businessman.stores = stores
 } )
 
 export default businessman
