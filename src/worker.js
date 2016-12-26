@@ -1,57 +1,36 @@
+import dispatch from './dispatch'
+import subscribe from './subscribe'
+import defineFreezeProperties from './util'
+import { INIT } from './types'
+
 let worker = {},
-    action = {},
-    mutation = {},
-    store = {}
+    stores = {},
+    forFront = []
 
 const api = {
-    start: function () {
+    start: () => {
         onmessage = e => {
-            let actiontype = e[ 0 ],
-                payload = e[ 1 ]
-            action[ actiontype ]( payload )
+            let storeType = e[ 0 ]
+                actionType = e[ 1 ],
+                payload = e[ 2 ]
+            stores[ storeType ].dispatch( actionType, payload )
         }
-        postMessage( { type: 'init', payload: { store: store, action: action } } )
+        postMessage( { type: INIT, payload: { stores: forFront } } )
     },
-    commit: function ( mutationtype, payload ) {
-        mutation[ mutationtype ]( store, payload )
-    },
-    createStore: function ( conf ) {
-        Object.defineProperties( store, {
-            [ conf.type ]: {
-                value: conf.state,
-                get: () => conf.state,
-                set: state => {
-                    conf.state = state
-                    postMessage( { type: conf.type, payload: conf.state } )
-                }
-            }
-        } )
-    },
-    createMutation: function ( conf ) {
-        Object.defineProperties( mutation, {
-            [ conf.type ]: {
-                value: conf.handler
-            }
-        } )
-    },
-    createAction: function ( conf ) {
-        Object.defineProperties( action, {
-            [ conf.type ]: {
-                value: conf.handler
-            }
-        } )
+    registerStore: store => {
+        let type = store.type
+        if ( type in stores ) {
+            stores[ type ] = store
+            forFront.push( {
+                type: type,
+                actions: Object.assign( {}, store.actions )
+            } )
+        }
     }
 }
 
 for ( let prop in api ) {
-    Object.defineProperties( worker, {
-        [ prop ]: {
-            value: api[ prop ],
-            enumerable: false,
-            writable: true,
-            configurable: false
-        }
-    } )
+    defineFreezeProperties( worker, prop, api[ prop ] )
 }
 
 export default worker

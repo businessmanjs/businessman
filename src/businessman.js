@@ -2,33 +2,40 @@ import worker from './worker'
 import install from './install'
 import dispatch from './dispatch'
 import subscribe from './subscribe'
+import defineFreezeProperties from './util'
+import { INIT } from './types'
 
 let businessman = {},
-    businessmanWoker = null
+    businessmanWoker = null,
+    stores = {}
 
 const api = {
-    install: function ( path ) {
-        install( path, businessmanWoker )
+    install: ( path ) => {
+        businessmanWoker = install( path, businessmanWoker )
     },
-    dispatch: function ( action, payload ) {
-        dispatch( action, payload, businessmanWoker )
-    },
-    subscribe: function ( data, cb ) {
-        subscribe( data, cb )
-    }
+    dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
+    subscribe: ( type, cb ) => subscribe( type, cb )
 }
 
 for ( let prop in api ) {
-    Object.defineProperties( businessman, {
-        [ prop ]: {
-            value: api[ prop ],
-            enumerable: false,
-            writable: false,
-            configurable: false
-        }
-    } )
+    defineFreezeProperties( businessman, prop, api[ prop ] )
 }
 
+subscribe( INIT, ( data ) => {
+    data.stores.map( ( store ) => {
+        stores[ store.type ] = () => {
+            dispatch: ( actionType, payload ) => {
+                dispatch( store.type, actionType, payload, businessmanWoker )
+            },
+            subscribe: ( type, cb ) => {
+                subscribe( type, cb )
+            }
+        }
+    } )
+} )
+
 export let worker = worker
+
+export let stores = stores
 
 export default businessman

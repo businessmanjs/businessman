@@ -1,8 +1,8 @@
 import { on } from './util'
 
-export default ( data, cb ) => {
+export default ( type, cb ) => {
     try {
-        on( data.type, cb )
+        on( type, cb )
     } catch ( e ) {
         console.error( e )
     }

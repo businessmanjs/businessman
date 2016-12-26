@@ -12,10 +12,21 @@ export let trigger = function ( data ) {
     }
 }
 
-export let on = function ( data, cb ) {
+export let on = function ( type, cb ) {
     try {
-        o.on( data.type, cb )
+        o.on( type, cb )
     } catch ( e ) {
         console.error( e )
     }
+}
+
+export let defineFreezeProperties = function ( target, name, value ) {
+    return Object.defineProperties( target, {
+        [ name ]: {
+            value: value,
+            enumerable: false,
+            writable: false,
+            configurable: false
+        }
+    } )
 }

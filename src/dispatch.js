@@ -1,6 +1,6 @@
-export default ( action, payload, worker ) => {
+export default ( storeType, actionType, payload, worker ) => {
     try {
-        worker.postMessage( [ action, payload ] )
+        worker.postMessage( [ storeType, actionType, payload ] )
     } catch ( e ) {
         console.error( e )
     }
