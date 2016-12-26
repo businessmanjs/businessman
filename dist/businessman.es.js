@@ -221,9 +221,9 @@ var forFront = [];
 var api$1 = {
     start: function () {
         onmessage = function (e) {
-            var storeType = e[ 0 ],
-                actionType = e[ 1 ],
-                payload = e[ 2 ];
+            var storeType = e.data[ 0 ],
+                actionType = e.data[ 1 ],
+                payload = e.data[ 2 ];
             stores$1[ storeType ].dispatch( actionType, payload );
         };
         postMessage( { type: INIT, payload: { stores: forFront } } );
