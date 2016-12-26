@@ -251,7 +251,6 @@ for ( var prop$1 in api$1 ) {
 var install = function ( path, worker ) {
     try {
         worker = new Worker( path );
-        worker.postMessage( 'start' );
         worker.onmessage = function ( data ) { return trigger( data ); };
         return worker
     } catch ( e ) {
