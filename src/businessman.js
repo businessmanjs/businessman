@@ -23,7 +23,7 @@ for ( let prop in api ) {
 
 subscribe( INIT, ( data ) => {
     data.stores.map( ( store ) => {
-        stores[ store.type ] = () => {
+        stores[ store.type ] = {
             dispatch: ( actionType, payload ) => {
                 dispatch( store.type, actionType, payload, businessmanWoker )
             },
@@ -34,8 +34,6 @@ subscribe( INIT, ( data ) => {
     } )
 } )
 
-export let worker = worker
-
-export let stores = stores
+export { worker, stores }
 
 export default businessman
