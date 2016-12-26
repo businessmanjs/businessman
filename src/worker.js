@@ -12,9 +12,7 @@ const api = {
         }
         postMessage( { type: 'init', payload: { store: store, action: action } } )
     },
-    commit: function ( e ) {
-        let mutationtype = e[ 0 ],
-            payload = e[ 1 ]
+    commit: function ( mutationtype, payload ) {
         mutation[ mutationtype ]( store, payload )
     },
     createStore: function ( conf ) {
