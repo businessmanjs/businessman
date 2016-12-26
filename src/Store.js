@@ -48,11 +48,11 @@ class Store {
     }
 
     commit ( type, payload ) {
-        this.mutations[ type ]( payload )
+        this.mutations[ type ]( this, payload )
     }
 
     dispatch ( type, payload ) {
-        this.actions[ type ]( payload )
+        this.actions[ type ]( this, payload )
     }
 
 }
