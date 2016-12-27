@@ -23,9 +23,9 @@ describe( 'businessman specs', function () {
     } )
 
     it( 'Dispatch and subscribe from the client store', function ( done ) {
-        stores.counter.dispatch( 'increment', 12345 )
+        stores.counter.dispatch( 'increment', 1 )
         stores.counter.subscribe( function ( state ) {
-            expect( state ).to.be( 12345 )
+            expect( state ).to.be( 1 )
         } )
         stores.message.dispatch( 'update', 'This is a test' )
         stores.message.subscribe( function ( state ) {
@@ -51,9 +51,9 @@ describe( 'businessman specs', function () {
     } )
 
     it( 'Dispatch and subscribe from the Businessman', function ( done ) {
-        businessman.dispatch( 'counter', 'increment', 12345 )
+        businessman.dispatch( 'counter', 'increment', 1 )
         businessman.subscribe( 'counter', function ( state ) {
-            expect( state ).to.be( 12345 )
+            expect( state ).to.be( 4 )
         } )
         businessman.dispatch( 'message', 'update', 'This is a test' )
         businessman.subscribe( 'message', function ( state ) {
