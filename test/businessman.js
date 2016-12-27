@@ -34,4 +34,20 @@ describe( 'businessman specs', function () {
         } )
     } )
 
+    it( 'Unsubscribe from the client store', function ( done ) {
+        stores.counter.unsubscribe()
+        let i = 0,
+            counterSubscriber = function () {
+                i++
+            }
+        stores.counter.subscribe( counterSubscriber )
+        stores.counter.dispatch( 'increment' )
+        setTimeout( function () {
+            stores.counter.unsubscribe( counterSubscriber )
+            stores.counter.dispatch( 'increment' )
+            expect( i ).to.be( 1 )
+            done()
+        }, 500 )
+    } )
+
 } )

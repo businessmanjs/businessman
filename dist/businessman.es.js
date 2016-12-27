@@ -132,7 +132,7 @@ var trigger = function ( data ) {
     try {
         o.trigger( data.type, data.payload );
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in trigger', e );
     }
 };
 
@@ -140,7 +140,16 @@ var on = function ( type, cb ) {
     try {
         o.on( type, cb );
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in on', e );
+    }
+};
+
+var off = function ( type, cb ) {
+    try {
+        if ( cb ) { o.off( type, cb ); }
+        else { o.off( type ); }
+    } catch ( e ) {
+        console.error( 'Error in off', e );
     }
 };
 
@@ -256,7 +265,7 @@ var install = function ( path, worker ) {
         worker.onmessage = function ( message ) { return trigger( message.data ); };
         return worker
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in install', e );
     }
 };
 
@@ -264,7 +273,7 @@ var dispatch$1 = function ( storeType, actionType, payload, worker ) {
     try {
         worker.postMessage( [ storeType, actionType, payload ] );
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in dispatch', e );
     }
 };
 
@@ -272,7 +281,15 @@ var subscribe = function ( type, cb ) {
     try {
         on( type, cb );
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in subscribe', e );
+    }
+};
+
+var unsubscribe = function ( type, cb ) {
+    try {
+        off( type, cb );
+    } catch ( e ) {
+        console.error( 'Error in unsubscribe', e );
     }
 };
 
@@ -285,6 +302,7 @@ var api = {
     },
     dispatch: function ( storeType, actionType, payload ) { return dispatch$1( storeType, actionType, payload, businessmanWoker ); },
     subscribe: function ( type, cb ) { return subscribe( type, cb ); },
+    unsubscribe: function ( type, cb ) { return unsubscribe( type, cb ); },
     worker: worker
 };
 
@@ -302,12 +320,15 @@ subscribe( INIT, function ( data ) {
                 },
                 subscribe: function ( cb ) {
                     subscribe( store.type, cb );
+                },
+                unsubscribe: function ( cb ) {
+                    unsubscribe( store.type, cb );
                 }
             };
         } );
         trigger( pack( CREATE_CLIENT_STORE, stores ) );
     } catch ( e ) {
-        console.error( e );
+        console.error( 'Error in creating client store', e );
     }
 } );
 

@@ -6,6 +6,6 @@ export default ( path, worker ) => {
         worker.onmessage = ( message ) => trigger( message.data )
         return worker
     } catch ( e ) {
-        console.error( e )
+        console.error( 'Error in install', e )
     }
 }

@@ -2,6 +2,7 @@ import worker from './worker'
 import install from './install'
 import dispatch from './dispatch'
 import subscribe from './subscribe'
+import unsubscribe from './unsubscribe'
 import { trigger, pack, defineFreezeProperties } from './util'
 import { INIT, CREATE_CLIENT_STORE } from './types'
 
@@ -14,6 +15,7 @@ const api = {
     },
     dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
     subscribe: ( type, cb ) => subscribe( type, cb ),
+    unsubscribe: ( type, cb ) => unsubscribe( type, cb ),
     worker: worker
 }
 
@@ -31,12 +33,15 @@ subscribe( INIT, ( data ) => {
                 },
                 subscribe: ( cb ) => {
                     subscribe( store.type, cb )
+                },
+                unsubscribe: ( cb ) => {
+                    unsubscribe( store.type, cb )
                 }
             }
         } )
         trigger( pack( CREATE_CLIENT_STORE, stores ) )
     } catch ( e ) {
-        console.error( e )
+        console.error( 'Error in creating client store', e )
     }
 } )
 
