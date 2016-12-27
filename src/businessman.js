@@ -15,8 +15,7 @@ const api = {
     },
     dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
     subscribe: ( type, cb ) => subscribe( type, cb ),
-    worker: worker,
-    stores: stores
+    worker: worker
 }
 
 for ( let prop in api ) {

@@ -281,8 +281,7 @@ var api = {
     },
     dispatch: function ( storeType, actionType, payload ) { return dispatch$1( storeType, actionType, payload, businessmanWoker ); },
     subscribe: function ( type, cb ) { return subscribe( type, cb ); },
-    worker: worker,
-    stores: stores
+    worker: worker
 };
 
 for ( var prop in api ) {
