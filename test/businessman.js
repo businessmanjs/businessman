@@ -17,6 +17,8 @@ describe( 'businessman specs', function () {
         for ( let store in stores ) {
             expect( stores[ store ] ).to.have.property( 'dispatch' )
             expect( stores[ store ] ).to.have.property( 'subscribe' )
+            expect( stores[ store ].dispatch ).to.be.an( 'function' )
+            expect( stores[ store ].subscribe ).to.be.an( 'function' )
         }
     } )
 
