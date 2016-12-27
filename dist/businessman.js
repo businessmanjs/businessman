@@ -222,8 +222,8 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
     this.actions[ type ]( this, payload );
 };
 
-var INIT = 'init';
-var CREATE_CLIENT_STORE = 'create_client_store';
+var INIT = 'INIT';
+var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
 
 var worker = {};
 var stores = {};

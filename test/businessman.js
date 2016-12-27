@@ -5,7 +5,7 @@ describe( 'businessman specs', function () {
     var stores
 
     it( 'Install Worker', function ( done ) {
-        businessman.subscribe( 'create_client_store', ( data ) => {
+        businessman.subscribe( 'CREATE_CLIENT_STORE', ( data ) => {
             stores = data
             expect( data ).to.be.ok()
             done()
