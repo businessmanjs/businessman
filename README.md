@@ -137,3 +137,14 @@ counter.subscribe( ( state ) => {
     console.log( state )
 } )
 ```
+
+The store style is available after the store in the worker has been created for the client. It can be obtained by subscribing `CREATE_CLIENT_STORE`.
+
+```
+let counter
+
+businessman.subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
+    console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...} } }
+    counter = stores.counter
+} )
+```
