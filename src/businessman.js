@@ -2,12 +2,11 @@ import worker from './worker'
 import install from './install'
 import dispatch from './dispatch'
 import subscribe from './subscribe'
-import { defineFreezeProperties } from './util'
-import { INIT } from './types'
+import { trigger, pack, defineFreezeProperties } from './util'
+import { INIT, CREATE_CLIENT_STORE } from './types'
 
 let businessman = {},
-    businessmanWoker = null,
-    stores = {}
+    businessmanWoker = null
 
 const api = {
     install: ( path ) => {
@@ -23,6 +22,7 @@ for ( let prop in api ) {
 }
 
 subscribe( INIT, ( data ) => {
+    let stores = {}
     try {
         data.stores.map( ( store ) => {
             stores[ store.type ] = {
@@ -34,7 +34,7 @@ subscribe( INIT, ( data ) => {
                 }
             }
         } )
-        businessman.stores = stores
+        trigger( pack( CREATE_CLIENT_STORE, stores ) )
     } catch ( e ) {
         console.error( e )
     }

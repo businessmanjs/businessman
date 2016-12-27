@@ -14,10 +14,12 @@ module.exports = function ( config ) {
             'test/businessman.js',
             {
                 pattern: 'dist/sample-worker.js',
-                included: false,
-                served: true
+                included: false
             }
         ],
+        proxies: {
+            '/dist/': '/base/dist/'
+        },
         browsers: [ 'Chrome' ],
         reporters: [ 'mocha' ],
         singleRun: true

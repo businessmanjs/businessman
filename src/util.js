@@ -20,6 +20,10 @@ export let on = function ( type, cb ) {
     }
 }
 
+export let pack = function ( type, payload ) {
+    return { type: type, payload: payload }
+}
+
 export let defineFreezeProperties = function ( target, name, value ) {
     return Object.defineProperties( target, {
         [ name ]: {
