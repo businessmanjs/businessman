@@ -50,4 +50,32 @@ describe( 'businessman specs', function () {
         }, 500 )
     } )
 
+    it( 'Dispatch and subscribe from the Businessman', function ( done ) {
+        businessman.dispatch( 'counter', 'increment', 12345 )
+        businessman.subscribe( 'counter', function ( state ) {
+            expect( state ).to.be( 12345 )
+        } )
+        businessman.dispatch( 'message', 'update', 'This is a test' )
+        businessman.subscribe( 'message', function ( state ) {
+            expect( state ).to.be( 'This is a test' )
+            done()
+        } )
+    } )
+
+    it( 'Unsubscribe from the client Businessman', function ( done ) {
+        businessman.unsubscribe( 'counter' )
+        let i = 0,
+            counterSubscriber = function () {
+                i++
+            }
+        businessman.subscribe( 'counter', counterSubscriber )
+        businessman.dispatch( 'counter', 'increment' )
+        setTimeout( function () {
+            businessman.unsubscribe( 'counter', counterSubscriber )
+            businessman.dispatch( 'counter', 'increment' )
+            expect( i ).to.be( 1 )
+            done()
+        }, 500 )
+    } )
+
 } )
