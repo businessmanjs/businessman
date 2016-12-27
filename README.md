@@ -148,3 +148,7 @@ businessman.subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
     counter = stores.counter
 } )
 ```
+
+# Welcome your contribution!
+
+[GitLab Project](https://gitlab.com/aggre/businessman/boards)
