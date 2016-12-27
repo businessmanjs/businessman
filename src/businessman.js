@@ -1,40 +1,47 @@
-import o from 'obseriot'
+import worker from './worker'
+import install from './install'
+import dispatch from './dispatch'
+import subscribe from './subscribe'
+import unsubscribe from './unsubscribe'
+import { trigger, pack, defineFreezeProperties } from './util'
+import { INIT, CREATE_CLIENT_STORE } from './types'
 
-var businessman = {}
+let businessman = {},
+    businessmanWoker = null
 
-Object.defineProperties( businessman, {
-    goodmorning: {
-        value: function ( e = {}, cb ) {
-            o.listen( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+const api = {
+    install: ( path ) => {
+        businessmanWoker = install( path, businessmanWoker )
     },
-    hello: {
-        value: function ( e = {}, ...arg ) {
-            o.notify( e, arg )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    },
-    goodnight: {
-        value: function ( e = {}, cb ) {
-            if ( cb ) o.remove( e, cb )
-            else o.remove( e )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
-    },
-    sheep: {
-        value: function ( e = {}, cb ) {
-            o.once( e, cb )
-        },
-        enumerable: false,
-        writable: false,
-        configurable: false
+    dispatch: ( storeType, actionType, payload ) => dispatch( storeType, actionType, payload, businessmanWoker ),
+    subscribe: ( type, cb ) => subscribe( type, cb ),
+    unsubscribe: ( type, cb ) => unsubscribe( type, cb ),
+    worker: worker
+}
+
+for ( let prop in api ) {
+    defineFreezeProperties( businessman, prop, api[ prop ] )
+}
+
+subscribe( INIT, ( data ) => {
+    let stores = {}
+    try {
+        data.stores.map( ( store ) => {
+            stores[ store.type ] = {
+                dispatch: ( actionType, payload ) => {
+                    dispatch( store.type, actionType, payload, businessmanWoker )
+                },
+                subscribe: ( cb ) => {
+                    subscribe( store.type, cb )
+                },
+                unsubscribe: ( cb ) => {
+                    unsubscribe( store.type, cb )
+                }
+            }
+        } )
+        trigger( pack( CREATE_CLIENT_STORE, stores ) )
+    } catch ( e ) {
+        console.error( 'Error in creating client store', e )
     }
 } )
 
