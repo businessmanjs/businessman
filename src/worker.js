@@ -23,7 +23,7 @@ const api = {
             stores[ type ] = store
             forFront.push( {
                 type: type,
-                actions: Object.assign( {}, store.actions )
+                actions: Object.keys( store.actions )
             } )
         }
     }

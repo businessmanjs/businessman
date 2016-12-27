@@ -235,7 +235,7 @@ var api$1 = {
             stores$1[ type ] = store;
             forFront.push( {
                 type: type,
-                actions: Object.assign( {}, store.actions )
+                actions: Object.keys( store.actions )
             } );
         }
     }
@@ -248,7 +248,7 @@ for ( var prop$1 in api$1 ) {
 var install = function ( path, worker ) {
     try {
         worker = new Worker( path );
-        worker.onmessage = function ( data ) { return trigger( data ); };
+        worker.onmessage = function ( message ) { return trigger( message.data ); };
         return worker
     } catch ( e ) {
         console.error( e );
@@ -290,17 +290,21 @@ for ( var prop in api ) {
 }
 
 subscribe( INIT, function ( data ) {
-    data.stores.map( function ( store ) {
-        stores[ store.type ] = {
-            dispatch: function ( actionType, payload ) {
-                dispatch$1( store.type, actionType, payload, businessmanWoker );
-            },
-            subscribe: function ( type, cb ) {
-                subscribe( type, cb );
-            }
-        };
-    } );
-    businessman.stores = stores;
+    try {
+        data.stores.map( function ( store ) {
+            stores[ store.type ] = {
+                dispatch: function ( actionType, payload ) {
+                    dispatch$1( store.type, actionType, payload, businessmanWoker );
+                },
+                subscribe: function ( type, cb ) {
+                    subscribe( type, cb );
+                }
+            };
+        } );
+        businessman.stores = stores;
+    } catch ( e ) {
+        console.error( e );
+    }
 } );
 
 export default businessman;

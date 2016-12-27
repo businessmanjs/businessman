@@ -24,17 +24,21 @@ for ( let prop in api ) {
 }
 
 subscribe( INIT, ( data ) => {
-    data.stores.map( ( store ) => {
-        stores[ store.type ] = {
-            dispatch: ( actionType, payload ) => {
-                dispatch( store.type, actionType, payload, businessmanWoker )
-            },
-            subscribe: ( type, cb ) => {
-                subscribe( type, cb )
+    try {
+        data.stores.map( ( store ) => {
+            stores[ store.type ] = {
+                dispatch: ( actionType, payload ) => {
+                    dispatch( store.type, actionType, payload, businessmanWoker )
+                },
+                subscribe: ( type, cb ) => {
+                    subscribe( type, cb )
+                }
             }
-        }
-    } )
-    businessman.stores = stores
+        } )
+        businessman.stores = stores
+    } catch ( e ) {
+        console.error( e )
+    }
 } )
 
 export default businessman
