@@ -7,7 +7,7 @@ worker.registerStore( {
     state: 0,
     mutations: {
         increment: ( store, num ) => {
-            store.state = num
+            store.state += num
         }
     },
     actions: {
