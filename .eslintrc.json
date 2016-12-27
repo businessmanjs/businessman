@@ -9,7 +9,10 @@
         "sourceType": "module"
     },
     "globals": {
-        "onmessage": true
+        "onmessage": true,
+        "describe": true,
+        "it": true,
+        "expect": true
     },
     "rules": {
         "indent": [

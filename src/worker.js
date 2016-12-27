@@ -1,5 +1,5 @@
-import Store from './store'
-import { defineFreezeProperties } from './util'
+import Store from './Store'
+import { pack, defineFreezeProperties } from './util'
 import { INIT } from './types'
 
 let worker = {},
@@ -9,12 +9,12 @@ let worker = {},
 const api = {
     start: () => {
         onmessage = e => {
-            let storeType = e[ 0 ],
-                actionType = e[ 1 ],
-                payload = e[ 2 ]
+            let storeType = e.data[ 0 ],
+                actionType = e.data[ 1 ],
+                payload = e.data[ 2 ]
             stores[ storeType ].dispatch( actionType, payload )
         }
-        postMessage( { type: INIT, payload: { stores: forFront } } )
+        postMessage( pack( INIT, { stores: forFront } ) )
     },
     registerStore: config => {
         let store = new Store( config ),
@@ -23,7 +23,7 @@ const api = {
             stores[ type ] = store
             forFront.push( {
                 type: type,
-                actions: Object.assign( {}, store.actions )
+                actions: Object.keys( store.actions )
             } )
         }
     }

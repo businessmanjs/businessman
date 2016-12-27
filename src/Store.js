@@ -1,3 +1,5 @@
+import { pack } from './util'
+
 class Store {
     constructor ( opt ) {
         opt = Object.assign( {
@@ -21,7 +23,7 @@ class Store {
                 get: () => opt.state,
                 set: state => {
                     opt.state = state
-                    postMessage( { type: opt.type, payload: opt.state } )
+                    postMessage( pack( opt.type, opt.state ) )
                 }
             },
             mutations: {
@@ -48,11 +50,11 @@ class Store {
     }
 
     commit ( type, payload ) {
-        this.mutations[ type ]( payload )
+        this.mutations[ type ]( this, payload )
     }
 
     dispatch ( type, payload ) {
-        this.actions[ type ]( payload )
+        this.actions[ type ]( this, payload )
     }
 
 }

@@ -1,3 +1,4 @@
-const INIT = 'init'
+const INIT = 'INIT'
+const CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE'
 
-export { INIT }
+export { INIT, CREATE_CLIENT_STORE }
