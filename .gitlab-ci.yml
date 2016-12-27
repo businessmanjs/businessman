@@ -1,0 +1,7 @@
+before_script:
+    - npm install
+
+test:
+    image: node:latest
+    script:
+        - npm test
