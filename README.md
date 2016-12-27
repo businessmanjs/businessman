@@ -121,10 +121,19 @@ ATTENTION
 ## Dispatch and Subscribe
 
 ```
-businessman.dispatch( 'counter', 'increment', 123 )
+businessman.dispatch( 'counter', 'increment', 1 )
 
 businessman.subscribe( 'counter', ( state ) => {
-    console.log( state ) // 123
+    console.log( state ) // 1
 } )
+```
 
+Dispatch / Subscribe is also available in Store style.
+
+```
+counter.dispatch( 'increment', 1 )
+
+counter.subscribe( ( state ) => {
+    console.log( state )
+} )
 ```
