@@ -13,4 +13,11 @@ describe( 'businessman specs', function () {
         businessman.install( '/dist/sample-worker.js' )
     } )
 
+    it( 'Store for clients includes dispatch() and subscribe()', function () {
+        for ( let store in stores ) {
+            expect( stores[ store ] ).to.have.property( 'dispatch' )
+            expect( stores[ store ] ).to.have.property( 'subscribe' )
+        }
+    } )
+
 } )

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "karma start config/karma.conf.js",
-    "pretest": "rollup -c config/rollup.build.sample-worker.js",
+    "pretest": "npm run build && rollup -c config/rollup.build.sample-worker.js",
     "posttest": "rm dist/sample-worker.js",
     "build": "node config/rollup.build.js"
   },

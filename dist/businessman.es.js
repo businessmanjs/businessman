@@ -1,61 +1,3 @@
-var Store = function Store ( opt ) {
-    opt = Object.assign( {
-        type: '',
-        state: null,
-        mutations: {},
-        actions: {}
-    }, opt );
-
-    var store = this;
-    var ref = this;
-    var dispatch = ref.dispatch;
-    var commit = ref.commit;
-
-    Object.defineProperties( this, {
-        type: {
-            value: opt.type,
-            enumerable: false,
-            writable: false,
-            configurable: false
-        },
-        state: {
-            get: function () { return opt.state; },
-            set: function (state) {
-                opt.state = state;
-                postMessage( { type: opt.type, payload: opt.state } );
-            }
-        },
-        mutations: {
-            value: opt.mutations,
-            configurable: false,
-            writable: false
-        },
-        actions: {
-            value: opt.actions,
-            configurable: false,
-            writable: false
-        },
-        dispatch: {
-            value: function ( type, payload ) { return dispatch.call( store, type, payload ); },
-            configurable: false,
-            writable: false
-        },
-        commit: {
-            value: function ( type, payload ) { return commit.call( store, type, payload ); },
-            configurable: false,
-            writable: false
-        }
-    } );
-};
-
-Store.prototype.commit = function commit ( type, payload ) {
-    this.mutations[ type ]( this, payload );
-};
-
-Store.prototype.dispatch = function dispatch ( type, payload ) {
-    this.actions[ type ]( this, payload );
-};
-
 var observable = function(el) {
 
   /**
@@ -202,6 +144,10 @@ var on = function ( type, cb ) {
     }
 };
 
+var pack = function ( type, payload ) {
+    return { type: type, payload: payload }
+};
+
 var defineFreezeProperties = function ( target, name, value ) {
     return Object.defineProperties( target, ( obj = {}, obj[ name ] = {
             value: value,
@@ -212,10 +158,69 @@ var defineFreezeProperties = function ( target, name, value ) {
     var obj;
 };
 
+var Store = function Store ( opt ) {
+    opt = Object.assign( {
+        type: '',
+        state: null,
+        mutations: {},
+        actions: {}
+    }, opt );
+
+    var store = this;
+    var ref = this;
+    var dispatch = ref.dispatch;
+    var commit = ref.commit;
+
+    Object.defineProperties( this, {
+        type: {
+            value: opt.type,
+            enumerable: false,
+            writable: false,
+            configurable: false
+        },
+        state: {
+            get: function () { return opt.state; },
+            set: function (state) {
+                opt.state = state;
+                postMessage( pack( opt.type, opt.state ) );
+            }
+        },
+        mutations: {
+            value: opt.mutations,
+            configurable: false,
+            writable: false
+        },
+        actions: {
+            value: opt.actions,
+            configurable: false,
+            writable: false
+        },
+        dispatch: {
+            value: function ( type, payload ) { return dispatch.call( store, type, payload ); },
+            configurable: false,
+            writable: false
+        },
+        commit: {
+            value: function ( type, payload ) { return commit.call( store, type, payload ); },
+            configurable: false,
+            writable: false
+        }
+    } );
+};
+
+Store.prototype.commit = function commit ( type, payload ) {
+    this.mutations[ type ]( this, payload );
+};
+
+Store.prototype.dispatch = function dispatch ( type, payload ) {
+    this.actions[ type ]( this, payload );
+};
+
 var INIT = 'init';
+var CREATE_CLIENT_STORE = 'create_client_store';
 
 var worker = {};
-var stores$1 = {};
+var stores = {};
 var forFront = [];
 
 var api$1 = {
@@ -224,15 +229,15 @@ var api$1 = {
             var storeType = e.data[ 0 ],
                 actionType = e.data[ 1 ],
                 payload = e.data[ 2 ];
-            stores$1[ storeType ].dispatch( actionType, payload );
+            stores[ storeType ].dispatch( actionType, payload );
         };
-        postMessage( { type: INIT, payload: { stores: forFront } } );
+        postMessage( pack( INIT, { stores: forFront } ) );
     },
     registerStore: function (config) {
         var store = new Store( config ),
             type = store.type;
-        if ( ! ( type in stores$1 ) ) {
-            stores$1[ type ] = store;
+        if ( ! ( type in stores ) ) {
+            stores[ type ] = store;
             forFront.push( {
                 type: type,
                 actions: Object.keys( store.actions )
@@ -273,7 +278,6 @@ var subscribe = function ( type, cb ) {
 
 var businessman = {};
 var businessmanWoker = null;
-var stores = {};
 
 var api = {
     install: function ( path ) {
@@ -289,6 +293,7 @@ for ( var prop in api ) {
 }
 
 subscribe( INIT, function ( data ) {
+    var stores = {};
     try {
         data.stores.map( function ( store ) {
             stores[ store.type ] = {
@@ -300,7 +305,7 @@ subscribe( INIT, function ( data ) {
                 }
             };
         } );
-        businessman.stores = stores;
+        trigger( pack( CREATE_CLIENT_STORE, stores ) );
     } catch ( e ) {
         console.error( e );
     }
