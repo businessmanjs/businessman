@@ -29,8 +29,8 @@ subscribe( INIT, ( data ) => {
                 dispatch: ( actionType, payload ) => {
                     dispatch( store.type, actionType, payload, businessmanWoker )
                 },
-                subscribe: ( type, cb ) => {
-                    subscribe( type, cb )
+                subscribe: ( cb ) => {
+                    subscribe( store.type, cb )
                 }
             }
         } )

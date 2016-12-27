@@ -300,8 +300,8 @@ subscribe( INIT, function ( data ) {
                 dispatch: function ( actionType, payload ) {
                     dispatch$1( store.type, actionType, payload, businessmanWoker );
                 },
-                subscribe: function ( type, cb ) {
-                    subscribe( type, cb );
+                subscribe: function ( cb ) {
+                    subscribe( store.type, cb );
                 }
             };
         } );
