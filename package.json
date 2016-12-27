@@ -4,10 +4,10 @@
   "description": "Be sick of being a businessman",
   "main": "index.js",
   "scripts": {
-    "test:start": "node server.js",
     "test": "karma start config/karma.conf.js",
-    "build": "node config/rollup.build.js",
-    "build:sample-worker": "rollup -c config/rollup.build.sample-worker.js"
+    "pretest": "rollup -c config/rollup.build.sample-worker.js",
+    "posttest": "rm dist/sample-worker.js",
+    "build": "node config/rollup.build.js"
   },
   "repository": {
     "type": "git",
@@ -28,7 +28,6 @@
     "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
     "expect.js": "^0.3.1",
-    "express": "^4.14.0",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-firefox-launcher": "^1.0.0",
