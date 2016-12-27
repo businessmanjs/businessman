@@ -6,8 +6,8 @@
   "jsnext:main": "src/businessman.js",
   "scripts": {
     "test": "karma start config/karma.conf.js",
-    "pretest": "npm run build && rollup -c config/rollup.build.sample-worker.js",
-    "posttest": "rm dist/sample-worker.js",
+    "pretest": "npm run build && node config/rollup.build.test.js",
+    "posttest": "rm dist/test-*.js",
     "build": "node config/rollup.build.js"
   },
   "repository": {
@@ -31,7 +31,6 @@
     "expect.js": "^0.3.1",
     "karma": "^1.3.0",
     "karma-chrome-launcher": "^2.0.0",
-    "karma-firefox-launcher": "^1.0.0",
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.1",
     "mocha": "^3.2.0",

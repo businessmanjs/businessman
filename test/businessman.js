@@ -10,7 +10,7 @@ describe( 'businessman specs', function () {
             expect( data ).to.be.ok()
             done()
         } )
-        businessman.install( '/dist/sample-worker.js' )
+        businessman.install( '/dist/test-worker.js' )
     } )
 
     it( 'Store for clients includes dispatch() and subscribe()', function () {
