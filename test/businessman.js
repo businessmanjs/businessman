@@ -22,4 +22,16 @@ describe( 'businessman specs', function () {
         }
     } )
 
+    it( 'Dispatch and subscribe from the client store', function ( done ) {
+        stores.counter.dispatch( 'increment', 12345 )
+        stores.counter.subscribe( function ( state ) {
+            expect( state ).to.be( 12345 )
+        } )
+        stores.message.dispatch( 'update', 'This is a test' )
+        stores.message.subscribe( function ( state ) {
+            expect( state ).to.be( 'This is a test' )
+            done()
+        } )
+    } )
+
 } )

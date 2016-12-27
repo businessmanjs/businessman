@@ -17,4 +17,19 @@ worker.registerStore( {
     }
 } )
 
+worker.registerStore( {
+    type: 'message',
+    state: '',
+    mutations: {
+        update: ( store, mes ) => {
+            store.state = mes
+        }
+    },
+    actions: {
+        update: ( store, mes = '' ) => {
+            store.commit( 'update', mes )
+        }
+    }
+} )
+
 worker.start()
