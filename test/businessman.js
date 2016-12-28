@@ -14,6 +14,7 @@ describe( 'businessman specs', function () {
     } )
 
     it( 'Store for clients includes dispatch() and subscribe()', function () {
+        expect( stores ).to.be.ok()
         for ( let store in stores ) {
             expect( stores[ store ] ).to.have.property( 'dispatch' )
             expect( stores[ store ] ).to.have.property( 'subscribe' )
