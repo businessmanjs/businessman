@@ -1,4 +1,4 @@
-var businessman = businessman || {}
+import businessman from '../src/businessman'
 
 describe( 'businessman specs', function () {
 
@@ -15,7 +15,9 @@ describe( 'businessman specs', function () {
 
     it( 'Store for clients includes dispatch() and subscribe()', function () {
         expect( stores ).to.be.ok()
-        for ( let store in stores ) {
+        let storeKeys = Object.keys( stores )
+        for ( let i = 0; i < storeKeys.length; i++) {
+            let store = storeKeys[ i ]
             expect( stores[ store ] ).to.have.property( 'dispatch' )
             expect( stores[ store ] ).to.have.property( 'subscribe' )
             expect( stores[ store ].dispatch ).to.be.an( 'function' )

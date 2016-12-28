@@ -1,6 +1,7 @@
 const rollup = require( 'rollup' ),
     npm = require( 'rollup-plugin-node-resolve' ),
     buble = require( 'rollup-plugin-buble' ),
+    commonjs = require( 'rollup-plugin-commonjs' ),
     name = 'businessman'
 
 rollup
@@ -8,7 +9,8 @@ rollup
     entry: `src/${ name }.js`,
     plugins: [
         npm( { jsnext: true } ),
-        buble()
+        buble(),
+        commonjs()
     ]
 } )
 .then( bundle => {

@@ -1,8 +1,9 @@
+import objectAssign from 'object-assign'
 import { pack } from './util'
 
 class Store {
     constructor ( opt ) {
-        opt = Object.assign( {
+        opt = objectAssign( {
             type: '',
             state: null,
             mutations: {},
