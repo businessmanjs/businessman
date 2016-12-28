@@ -26,7 +26,8 @@ before_script:
     - wget -O /etc/init.d/xvfb https://gist.githubusercontent.com/axilleas/3fc13e0c90ad9f58bee903a41e8a6d48/raw/169a60010635e05eaa902c5f3b4393321f2452f0/xvfb
     - chmod 0755 /etc/init.d/xvfb
     - sh -e /etc/init.d/xvfb start
+    - export CHROME_BIN=/usr/bin/google-chrome
 
-build:
+test:latest:
     script:
     - npm test
