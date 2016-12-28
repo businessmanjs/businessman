@@ -149,6 +149,6 @@ businessman.subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
 } )
 ```
 
-# Welcome your contribution!
+# Feel free to join
 
 [GitLab Project](https://gitlab.com/aggre/businessman/boards)
