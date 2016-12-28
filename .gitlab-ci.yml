@@ -5,6 +5,7 @@ before_script:
     - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
     - npm i -g electron-prebuilt
     - npm install
+    - electron
 
 test:latest:
     image: node:latest
