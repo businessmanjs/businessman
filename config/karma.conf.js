@@ -5,22 +5,21 @@ module.exports = function ( config ) {
         plugins: [
             'karma-mocha',
             'karma-mocha-reporter',
-            'karma-chrome-launcher',
-            'karma-firefox-launcher'
+            'karma-electron-launcher'
         ],
         files: [
             'node_modules/expect.js/index.js',
             'dist/businessman.js',
             'test/businessman.js',
             {
-                pattern: 'dist/sample-worker.js',
+                pattern: 'dist/test-worker.js',
                 included: false
             }
         ],
         proxies: {
             '/dist/': '/base/dist/'
         },
-        browsers: [ 'Chrome' ],
+        browsers: [ 'Electron' ],
         reporters: [ 'mocha' ],
         singleRun: true
     } )

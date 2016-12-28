@@ -10,10 +10,11 @@ describe( 'businessman specs', function () {
             expect( data ).to.be.ok()
             done()
         } )
-        businessman.install( '/dist/sample-worker.js' )
+        businessman.install( '/dist/test-worker.js' )
     } )
 
     it( 'Store for clients includes dispatch() and subscribe()', function () {
+        expect( stores ).to.be.ok()
         for ( let store in stores ) {
             expect( stores[ store ] ).to.have.property( 'dispatch' )
             expect( stores[ store ] ).to.have.property( 'subscribe' )
