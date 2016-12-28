@@ -9,7 +9,4 @@ before_script:
 test:latest:
     image: node:latest
     script:
-        - Xvfb :99 >& /dev/null &
-        - sleep 5
-        - DISPLAY=:99.0 npm test
-        - pkill -f Xvfb
+        - npm test
