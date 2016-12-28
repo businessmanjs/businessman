@@ -5,7 +5,7 @@ module.exports = function ( config ) {
         plugins: [
             'karma-mocha',
             'karma-mocha-reporter',
-            'karma-chrome-launcher'
+            'karma-electron-launcher'
         ],
         files: [
             'node_modules/expect.js/index.js',
@@ -19,7 +19,7 @@ module.exports = function ( config ) {
         proxies: {
             '/dist/': '/base/dist/'
         },
-        browsers: [ 'Chrome' ],
+        browsers: [ 'Electron' ],
         reporters: [ 'mocha' ],
         singleRun: true
     } )
