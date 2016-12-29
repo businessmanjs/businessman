@@ -1,6 +1,6 @@
 Multi-thread State Management by the Worker API.
 
-![Businessman](https://aggre.gitlab.io/businessman/assets/businessman.png)
+<img src="https://aggre.gitlab.io/businessman/assets/businessman.png" alt="Businessman" width="750">
 
 # API
 
