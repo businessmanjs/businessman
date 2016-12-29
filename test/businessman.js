@@ -1,4 +1,4 @@
-import { install, dispatch, subscribe, unsubscribe  } from '../src/businessman'
+import { install, dispatch, subscribe, unsubscribe } from '../src/businessman'
 
 describe( 'businessman specs', function () {
 
@@ -16,7 +16,7 @@ describe( 'businessman specs', function () {
     it( 'Store for clients includes dispatch() and subscribe()', function () {
         expect( stores ).to.be.ok()
         let storeKeys = Object.keys( stores )
-        for ( let i = 0; i < storeKeys.length; i++) {
+        for ( let i = 0; i < storeKeys.length; i++ ) {
             let store = storeKeys[ i ]
             expect( stores[ store ] ).to.have.property( 'dispatch' )
             expect( stores[ store ] ).to.have.property( 'subscribe' )

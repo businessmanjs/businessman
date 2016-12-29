@@ -1,15 +1,14 @@
 {
     "env": {
         "browser": true,
-        "es6": true,
-        "node": true
+        "commonjs": true,
+        "es6": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
         "sourceType": "module"
     },
     "globals": {
-        "onmessage": true,
         "describe": true,
         "it": true,
         "expect": true
@@ -39,6 +38,31 @@
                     "error"
                 ]
             }
-        ]
+        ],
+        "array-bracket-spacing": [
+            2,
+            "always"
+        ],
+        "block-spacing": [
+            2,
+            "always"
+        ],
+        "comma-spacing": [
+            2,
+            {
+                "before": false,
+                "after": true
+            }
+        ],
+        "space-before-function-paren": [
+            2,
+            "always"
+        ],
+        "space-in-parens": [
+            2,
+            "always"
+        ],
+        "space-before-blocks": 2,
+        "no-multi-spaces": "error"
     }
 }
