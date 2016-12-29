@@ -146,7 +146,7 @@ The store style is available after the store in the worker has been created for 
 let counter
 
 subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
-    console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...} } }
+    console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...}, unsubscribe: function () {...}, getState: function () {...} } }
     counter = stores.counter
 } )
 ```
@@ -165,7 +165,7 @@ unsubscribe( 'counter', listener ) // Delete one listener
 For store style ...
 
 ```
-counter.unsubscribe( )
+counter.unsubscribe()
 counter.unsubscribe( listener )
 ```
 
