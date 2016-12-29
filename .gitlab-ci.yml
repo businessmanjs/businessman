@@ -1,8 +1,21 @@
 image: node:latest
 
-before_script:
-    - npm install --silent
+stages:
+    - test
+    - pages
 
-test:latest:
+test:
+    stage: test
     script:
+        - npm install --silent
         - npm test
+
+pages:
+    stage: pages
+    script:
+        - echo 'Nothing to do...'
+    artifacts:
+        paths:
+            - public
+    only:
+        - master
