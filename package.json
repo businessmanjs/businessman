@@ -22,7 +22,6 @@
   },
   "homepage": "https://gitlab.com/aggre/businessman#README",
   "dependencies": {
-    "object-assign": "^4.1.0",
     "riot-observable": "^3.0.0"
   },
   "devDependencies": {
