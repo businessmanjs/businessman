@@ -74,6 +74,34 @@ increment: ( store, num = 1 ) => {
 }
 ```
 
+## Create Manager
+
+Mutation and action belong to one store.
+
+If you want to dispatch to multiple stores at the same time, you can use the manager.
+
+The manager has registered it using `worker.registerManager()`.
+
+```
+import { worker } from 'businessman'
+
+worker.registerManager( {
+    type: 'countUpMessage',
+    handler: ( stores, num = 1 ) => {
+        stores.counter.dispatch( 'increment', num )
+        stores.message.dispatch( 'update', `${num} has been added to the counter` )
+    }
+} )
+```
+
+Call `manager()` with manager type and payload specified.
+
+```
+import { manager } from 'businessman'
+
+manager( 'countUpMessage', 1 )
+```
+
 ## Start worker
 
 Call `worker.start()` to start a worker.
