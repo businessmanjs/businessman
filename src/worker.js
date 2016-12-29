@@ -1,6 +1,6 @@
-import Store from './Store'
+import Store from './store/Store'
 import { pack } from './util'
-import { INIT } from './types'
+import { INIT } from './behaviorTypes'
 
 let stores = {},
     forFront = []

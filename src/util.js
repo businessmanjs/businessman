@@ -4,31 +4,33 @@ const o = new function () {
     observable( this )
 }
 
-export let trigger = function ( data ) {
-    try {
-        o.trigger( data.type, data.payload )
-    } catch ( e ) {
-        console.error( 'Error in trigger', e )
-    }
+export const trigger = function ( data ) {
+    o.trigger( data.type, data.payload, data.applied )
 }
 
-export let on = function ( type, cb ) {
-    try {
-        o.on( type, cb )
-    } catch ( e ) {
-        console.error( 'Error in on', e )
-    }
+export const on = function ( type, cb ) {
+    o.on( type, cb )
 }
 
-export let off = function ( type, cb ) {
-    try {
-        if ( cb ) o.off( type, cb )
-        else o.off( type )
-    } catch ( e ) {
-        console.error( 'Error in off', e )
-    }
+export const off = function ( type, cb ) {
+    if ( cb ) o.off( type, cb )
+    else o.off( type )
 }
 
-export let pack = function ( type, payload ) {
-    return { type: type, payload: payload }
+export const pack = function ( type = '', payload = {}, applied ) {
+    if ( applied ) return { type: type, payload: payload, applied: applied }
+    else return { type: type, payload: payload }
+}
+
+export const assign = function ( target, sources ) {
+    try {
+        return Object.assign( target, sources )
+    } catch ( e ) {
+        let keys = Object.keys( sources )
+        for ( let i = 0; i < keys.length; i++ ) {
+            let key = keys[ i ]
+            if ( ! ( key in target ) ) target[ key ] = sources[ key ]
+        }
+        return target
+    }
 }
