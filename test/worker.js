@@ -36,4 +36,12 @@ worker.registerStore( {
     }
 } )
 
+worker.registerManager( {
+    type: 'countUpMessage',
+    handler: ( stores, num = 1 ) => {
+        stores.counter.dispatch( 'increment', num )
+        stores.message.dispatch( 'update', `${num} has been added to the counter` )
+    }
+} )
+
 worker.start()

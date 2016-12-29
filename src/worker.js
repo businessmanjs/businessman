@@ -3,26 +3,44 @@ import { pack } from './util'
 import { INIT } from './behaviorTypes'
 
 let stores = {},
-    forFront = []
+    managers = {},
+    forClient = {
+        stores: [],
+        managers: []
+    }
 
 const worker = {
     start: () => {
         onmessage = e => {
-            let storeType = e.data[ 0 ],
-                actionType = e.data[ 1 ],
-                payload = e.data[ 2 ]
-            stores[ storeType ].dispatch( actionType, payload )
+            const data = e.data
+            if ( data.length > 2 ) stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] )
+            else if ( data.length > 1 ) managers[ data[ 0 ] ]( stores, data[ 1 ] )
         }
-        postMessage( pack( INIT, { stores: forFront } ) )
+        postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers } ) )
     },
     registerStore: config => {
-        let store = new Store( config ),
-            type = store.type
+        const store = new Store( config ),
+            {
+                type,
+                actions
+            } = store
         if ( ! ( type in stores ) ) {
             stores[ type ] = store
-            forFront.push( {
+            forClient.stores.push( {
                 type: type,
-                actions: Object.keys( store.actions )
+                actions: Object.keys( actions )
+            } )
+        }
+    },
+    registerManager: ( config ) => {
+        const {
+            type,
+            handler
+        } = config
+        if ( ! ( type in managers ) ) {
+            managers[ type ] = handler
+            forClient.managers.push( {
+                type: type
             } )
         }
     }

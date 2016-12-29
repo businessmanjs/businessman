@@ -1,5 +1,6 @@
 var INIT = 'INIT';
 var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
+var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
 var GET_STATE = 'GET_STATE';
 
 var mutations = {};
@@ -236,26 +237,40 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 };
 
 var stores = {};
-var forFront = [];
+var managers = {};
+var forClient = {
+        stores: [],
+        managers: []
+    };
 
 var worker = {
     start: function () {
         onmessage = function (e) {
-            var storeType = e.data[ 0 ],
-                actionType = e.data[ 1 ],
-                payload = e.data[ 2 ];
-            stores[ storeType ].dispatch( actionType, payload );
+            var data = e.data;
+            if ( data.length > 2 ) { stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] ); }
+            else if ( data.length > 1 ) { managers[ data[ 0 ] ]( stores, data[ 1 ] ); }
         };
-        postMessage( pack( INIT, { stores: forFront } ) );
+        postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers } ) );
     },
     registerStore: function (config) {
-        var store = new Store( config ),
-            type = store.type;
+        var store = new Store( config );
+        var type = store.type;
+        var actions = store.actions;
         if ( ! ( type in stores ) ) {
             stores[ type ] = store;
-            forFront.push( {
+            forClient.stores.push( {
                 type: type,
-                actions: Object.keys( store.actions )
+                actions: Object.keys( actions )
+            } );
+        }
+    },
+    registerManager: function ( config ) {
+        var type = config.type;
+        var handler = config.handler;
+        if ( ! ( type in managers ) ) {
+            managers[ type ] = handler;
+            forClient.managers.push( {
+                type: type
             } );
         }
     }
@@ -275,6 +290,10 @@ var _install = function ( path, worker ) {
 
 var dispatch$2 = function ( storeType, actionType, payload, worker ) {
     worker.postMessage( [ storeType, actionType, payload ] );
+};
+
+var _manager = function ( managerType, payload, worker ) {
+    worker.postMessage( [ managerType, payload ] );
 };
 
 var subscribe$1 = function ( type, cb ) {
@@ -312,12 +331,14 @@ var install = function ( path ) {
         businessmanWoker = _install( path, businessmanWoker );
     };
 var dispatch$1 = function ( storeType, actionType, payload ) { return dispatch$2( storeType, actionType, payload, businessmanWoker ); };
+var manager = function ( managerType, payload ) { return _manager( managerType, payload, businessmanWoker ); };
 var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
 var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
 var getState = function ( storeType ) { return _getState( storeType, businessmanWoker ); };
 
 subscribe( INIT, function ( data ) {
-    var stores = {};
+    var stores = {},
+        managers = {};
     try {
         data.stores.map( function ( store ) {
             stores[ store.type ] = {
@@ -328,9 +349,11 @@ subscribe( INIT, function ( data ) {
             };
         } );
         trigger( pack( CREATE_CLIENT_STORE, stores ) );
+        managers = data.managers;
+        trigger( pack( CREATE_CLIENT_MANAGER, managers ) );
     } catch ( e ) {
-        console.error( 'Error in creating client store', e );
+        console.error( 'Error in creating client store or client manager', e );
     }
 } );
 
-export { install, dispatch$1 as dispatch, subscribe, unsubscribe, getState, worker$1 as worker };
+export { install, dispatch$1 as dispatch, manager, subscribe, unsubscribe, getState, worker$1 as worker };
