@@ -1,6 +1,4 @@
-import businessman from '../src/businessman'
-
-const worker = businessman.worker
+import { worker } from '../src/businessman'
 
 worker.registerStore( {
     type: 'counter',
@@ -8,11 +6,17 @@ worker.registerStore( {
     mutations: {
         increment: ( store, num ) => {
             store.state += num
+        },
+        set: ( store, num ) => {
+            store.state = num
         }
     },
     actions: {
         increment: ( store, num = 1 ) => {
             store.commit( 'increment', num )
+        },
+        set: ( store, num = 0 ) => {
+            store.commit( 'set', num )
         }
     }
 } )
