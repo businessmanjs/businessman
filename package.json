@@ -8,7 +8,8 @@
     "test": "karma start config/karma.conf.js",
     "pretest": "npm run build && node config/rollup.build.test.js",
     "posttest": "rm dist/test-*.js",
-    "build": "node config/rollup.build.js"
+    "build": "node config/rollup.build.js",
+    "prebuild": "eslint src, test"
   },
   "repository": {
     "type": "git",
@@ -26,9 +27,6 @@
   },
   "devDependencies": {
     "eslint": "^3.12.2",
-    "eslint-config-standard": "^6.2.1",
-    "eslint-plugin-promise": "^3.4.0",
-    "eslint-plugin-standard": "^2.0.1",
     "expect.js": "^0.3.1",
     "karma": "^1.3.0",
     "karma-mocha": "^1.3.0",
