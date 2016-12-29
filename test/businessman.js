@@ -1,4 +1,4 @@
-import { install, dispatch, subscribe, unsubscribe } from '../src/businessman'
+import { install, dispatch, subscribe, unsubscribe, getState } from '../src/businessman'
 
 describe( 'businessman specs', function () {
 
@@ -27,12 +27,14 @@ describe( 'businessman specs', function () {
 
     it( 'Dispatch and subscribe from the client store', function ( done ) {
         stores.counter.dispatch( 'increment', 1 )
-        stores.counter.subscribe( function ( state ) {
+        stores.counter.subscribe( function ( state, applied ) {
             expect( state ).to.be( 1 )
+            expect( applied ).to.be( 'increment' )
         } )
         stores.message.dispatch( 'update', 'This is a test' )
-        stores.message.subscribe( function ( state ) {
+        stores.message.subscribe( function ( state, applied ) {
             expect( state ).to.be( 'This is a test' )
+            expect( applied ).to.be( 'update' )
             done()
         } )
     } )
@@ -53,19 +55,34 @@ describe( 'businessman specs', function () {
         }, 500 )
     } )
 
-    it( 'Dispatch and subscribe from the Businessman', function ( done ) {
-        dispatch( 'counter', 'increment', 1 )
-        subscribe( 'counter', function ( state ) {
-            expect( state ).to.be( 4 )
-        } )
-        dispatch( 'message', 'update', 'This is a test' )
-        subscribe( 'message', function ( state ) {
-            expect( state ).to.be( 'This is a test' )
+    it( 'Get store state', function ( done ) {
+        stores.counter.unsubscribe()
+        stores.counter.dispatch( 'set', 123456 )
+        stores.counter.getState()
+        .then( ( state ) => {
+            expect( state ).to.be( 123456 )
             done()
         } )
     } )
 
-    it( 'Unsubscribe from the client Businessman', function ( done ) {
+    it( 'Dispatch and subscribe from the Businessman', function ( done ) {
+        dispatch( 'counter', 'set', 0 )
+        setTimeout( () => {
+            dispatch( 'counter', 'increment', 1 )
+            subscribe( 'counter', function ( state, applied ) {
+                expect( state ).to.be( 1 )
+                expect( applied ).to.be( 'increment' )
+            } )
+            dispatch( 'message', 'update', 'This is a test' )
+            subscribe( 'message', function ( state, applied ) {
+                expect( state ).to.be( 'This is a test' )
+                expect( applied ).to.be( 'update' )
+                done()
+            } )
+        }, 500 )
+    } )
+
+    it( 'Unsubscribe from the Businessman', function ( done ) {
         unsubscribe( 'counter' )
         let i = 0,
             counterSubscriber = function () {
@@ -79,6 +96,16 @@ describe( 'businessman specs', function () {
             expect( i ).to.be( 1 )
             done()
         }, 500 )
+    } )
+
+    it( 'Get store state from the Businessman', function ( done ) {
+        unsubscribe( 'counter' )
+        dispatch( 'counter', 'set', 123456789 )
+        getState( 'counter' )
+        .then( ( state ) => {
+            expect( state ).to.be( 123456789 )
+            done()
+        } )
     } )
 
 } )

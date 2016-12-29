@@ -1,12 +1,11 @@
-import Store from './Store'
-import { pack, defineFreezeProperties } from './util'
-import { INIT } from './types'
+import Store from './store/Store'
+import { pack } from './util'
+import { INIT } from './behaviorTypes'
 
-let worker = {},
-    stores = {},
+let stores = {},
     forFront = []
 
-const api = {
+const worker = {
     start: () => {
         onmessage = e => {
             let storeType = e.data[ 0 ],
@@ -29,8 +28,4 @@ const api = {
     }
 }
 
-for ( let prop in api ) {
-    defineFreezeProperties( worker, prop, api[ prop ] )
-}
-
-export default worker
+export default Object.freeze( worker )

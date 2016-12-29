@@ -1,3 +1,13 @@
+var INIT = 'INIT';
+var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
+var GET_STATE = 'GET_STATE';
+
+var mutations = {};
+mutations[ GET_STATE ] = function ( store ) { return store.state = store.state; };
+
+var actions = {};
+actions[ GET_STATE ] = function ( store ) { return store.commit( GET_STATE ); };
+
 var observable = function(el) {
 
   /**
@@ -129,53 +139,51 @@ var o = new function () {
 };
 
 var trigger = function ( data ) {
-    try {
-        o.trigger( data.type, data.payload );
-    } catch ( e ) {
-        console.error( 'Error in trigger', e );
-    }
+    o.trigger( data.type, data.payload, data.applied );
 };
 
 var on = function ( type, cb ) {
-    try {
-        o.on( type, cb );
-    } catch ( e ) {
-        console.error( 'Error in on', e );
-    }
+    o.on( type, cb );
 };
 
 var off = function ( type, cb ) {
+    if ( cb ) { o.off( type, cb ); }
+    else { o.off( type ); }
+};
+
+var pack = function ( type, payload, applied ) {
+    if ( type === void 0 ) type = '';
+    if ( payload === void 0 ) payload = {};
+
+    if ( applied ) { return { type: type, payload: payload, applied: applied } }
+    else { return { type: type, payload: payload } }
+};
+
+var assign = function ( target, sources ) {
     try {
-        if ( cb ) { o.off( type, cb ); }
-        else { o.off( type ); }
+        return Object.assign( target, sources )
     } catch ( e ) {
-        console.error( 'Error in off', e );
+        var keys = Object.keys( sources );
+        for ( var i = 0; i < keys.length; i++ ) {
+            var key = keys[ i ];
+            if ( ! ( key in target ) ) { target[ key ] = sources[ key ]; }
+        }
+        return target
     }
-};
-
-var pack = function ( type, payload ) {
-    return { type: type, payload: payload }
-};
-
-var defineFreezeProperties = function ( target, name, value ) {
-    return Object.defineProperties( target, ( obj = {}, obj[ name ] = {
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: false
-        }, obj ) )
-    var obj;
 };
 
 var Store = function Store ( opt ) {
     var state = opt.state;
+    var mutations$$1 = opt.mutations; if ( mutations$$1 === void 0 ) mutations$$1 = {};
+    var actions$$1 = opt.actions; if ( actions$$1 === void 0 ) actions$$1 = {};
     var type = opt.type;
-    var mutations = opt.mutations;
-    var actions = opt.actions;
     var store = this;
     var ref = this;
     var dispatch = ref.dispatch;
     var commit = ref.commit;
+
+    mutations$$1 = assign( mutations$$1, mutations );
+    actions$$1 = assign( actions$$1, actions );
 
     Object.defineProperties( this, {
         type: {
@@ -188,16 +196,16 @@ var Store = function Store ( opt ) {
             get: function () { return state; },
             set: function (newState) {
                 state = newState;
-                postMessage( pack( type, state ) );
+                postMessage( pack( type, state, store.appliedMutation ) );
             }
         },
         mutations: {
-            value: mutations,
+            value: mutations$$1,
             configurable: false,
             writable: false
         },
         actions: {
-            value: actions,
+            value: actions$$1,
             configurable: false,
             writable: false
         },
@@ -210,11 +218,16 @@ var Store = function Store ( opt ) {
             value: function ( type, payload ) { return commit.call( store, type, payload ); },
             configurable: false,
             writable: false
+        },
+        appliedMutation: {
+            value: '',
+            writable: true
         }
     } );
 };
 
 Store.prototype.commit = function commit ( type, payload ) {
+    this.appliedMutation = type;
     this.mutations[ type ]( this, payload );
 };
 
@@ -222,14 +235,10 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
     this.actions[ type ]( this, payload );
 };
 
-var INIT = 'INIT';
-var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
-
-var worker = {};
 var stores = {};
 var forFront = [];
 
-var api = {
+var worker = {
     start: function () {
         onmessage = function (e) {
             var storeType = e.data[ 0 ],
@@ -252,9 +261,7 @@ var api = {
     }
 };
 
-for ( var prop in api ) {
-    defineFreezeProperties( worker, prop, api[ prop ] );
-}
+var worker$1 = Object.freeze( worker );
 
 var _install = function ( path, worker ) {
     try {
@@ -266,28 +273,37 @@ var _install = function ( path, worker ) {
     }
 };
 
-var _dispatch = function ( storeType, actionType, payload, worker ) {
-    try {
-        worker.postMessage( [ storeType, actionType, payload ] );
-    } catch ( e ) {
-        console.error( 'Error in dispatch', e );
-    }
+var dispatch$2 = function ( storeType, actionType, payload, worker ) {
+    worker.postMessage( [ storeType, actionType, payload ] );
 };
 
-var _subscribe = function ( type, cb ) {
-    try {
-        on( type, cb );
-    } catch ( e ) {
-        console.error( 'Error in subscribe', e );
-    }
+var subscribe$1 = function ( type, cb ) {
+    on( type, cb );
 };
 
-var _unsubscribe = function ( type, cb ) {
-    try {
-        off( type, cb );
-    } catch ( e ) {
-        console.error( 'Error in unsubscribe', e );
-    }
+var unsubscribe$1 = function ( type, cb ) {
+    off( type, cb );
+};
+
+var _getState = function ( storeType, worker ) {
+    return new Promise( function ( resolve, reject ) {
+
+        var subscriber = function ( state, applied ) {
+            if ( applied !== GET_STATE ) { return }
+            unsubscribe$1( storeType, subscriber );
+            resolve( state );
+        };
+
+        subscribe$1( storeType, subscriber );
+
+        try {
+            dispatch$2( storeType, GET_STATE, '', worker );
+        } catch ( e ) {
+            reject( e );
+            unsubscribe$1( storeType, subscriber );
+        }
+
+    } )
 };
 
 var businessmanWoker = null;
@@ -295,24 +311,20 @@ var businessmanWoker = null;
 var install = function ( path ) {
         businessmanWoker = _install( path, businessmanWoker );
     };
-var dispatch$1 = function ( storeType, actionType, payload ) { return _dispatch( storeType, actionType, payload, businessmanWoker ); };
-var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
-var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
+var dispatch$1 = function ( storeType, actionType, payload ) { return dispatch$2( storeType, actionType, payload, businessmanWoker ); };
+var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
+var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
+var getState = function ( storeType ) { return _getState( storeType, businessmanWoker ); };
 
 subscribe( INIT, function ( data ) {
     var stores = {};
     try {
         data.stores.map( function ( store ) {
             stores[ store.type ] = {
-                dispatch: function ( actionType, payload ) {
-                    dispatch$1( store.type, actionType, payload );
-                },
-                subscribe: function ( cb ) {
-                    subscribe( store.type, cb );
-                },
-                unsubscribe: function ( cb ) {
-                    unsubscribe( store.type, cb );
-                }
+                dispatch: function ( actionType, payload ) { return dispatch$1( store.type, actionType, payload ); },
+                subscribe: function ( cb ) { return subscribe( store.type, cb ); },
+                unsubscribe: function ( cb ) { return unsubscribe( store.type, cb ); },
+                getState: function () { return getState( store.type ); }
             };
         } );
         trigger( pack( CREATE_CLIENT_STORE, stores ) );
@@ -321,4 +333,4 @@ subscribe( INIT, function ( data ) {
     }
 } );
 
-export { install, dispatch$1 as dispatch, subscribe, unsubscribe, worker };
+export { install, dispatch$1 as dispatch, subscribe, unsubscribe, getState, worker$1 as worker };

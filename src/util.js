@@ -4,42 +4,33 @@ const o = new function () {
     observable( this )
 }
 
-export let trigger = function ( data ) {
+export const trigger = function ( data ) {
+    o.trigger( data.type, data.payload, data.applied )
+}
+
+export const on = function ( type, cb ) {
+    o.on( type, cb )
+}
+
+export const off = function ( type, cb ) {
+    if ( cb ) o.off( type, cb )
+    else o.off( type )
+}
+
+export const pack = function ( type = '', payload = {}, applied ) {
+    if ( applied ) return { type: type, payload: payload, applied: applied }
+    else return { type: type, payload: payload }
+}
+
+export const assign = function ( target, sources ) {
     try {
-        o.trigger( data.type, data.payload )
+        return Object.assign( target, sources )
     } catch ( e ) {
-        console.error( 'Error in trigger', e )
-    }
-}
-
-export let on = function ( type, cb ) {
-    try {
-        o.on( type, cb )
-    } catch ( e ) {
-        console.error( 'Error in on', e )
-    }
-}
-
-export let off = function ( type, cb ) {
-    try {
-        if ( cb ) o.off( type, cb )
-        else o.off( type )
-    } catch ( e ) {
-        console.error( 'Error in off', e )
-    }
-}
-
-export let pack = function ( type, payload ) {
-    return { type: type, payload: payload }
-}
-
-export let defineFreezeProperties = function ( target, name, value ) {
-    return Object.defineProperties( target, {
-        [ name ]: {
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: false
+        let keys = Object.keys( sources )
+        for ( let i = 0; i < keys.length; i++ ) {
+            let key = keys[ i ]
+            if ( ! ( key in target ) ) target[ key ] = sources[ key ]
         }
-    } )
+        return target
+    }
 }

@@ -9,6 +9,8 @@
         "sourceType": "module"
     },
     "globals": {
+        "onmessage": true,
+        "postMessage": true,
         "describe": true,
         "it": true,
         "expect": true

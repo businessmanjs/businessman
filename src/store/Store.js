@@ -1,17 +1,22 @@
-import { pack } from './util'
+import builtInMutations from './mutations'
+import builtInActions from './actions'
+import { pack, assign } from '../util'
 
 class Store {
     constructor ( opt ) {
         let {
-            state
+            state,
+            mutations = {},
+            actions = {}
         } = opt
         const {
-            type,
-            mutations,
-            actions
+            type
         } = opt
         const store = this
         const { dispatch, commit } = this
+
+        mutations = assign( mutations, builtInMutations )
+        actions = assign( actions, builtInActions )
 
         Object.defineProperties( this, {
             type: {
@@ -24,7 +29,7 @@ class Store {
                 get: () => state,
                 set: newState => {
                     state = newState
-                    postMessage( pack( type, state ) )
+                    postMessage( pack( type, state, store.appliedMutation ) )
                 }
             },
             mutations: {
@@ -46,11 +51,16 @@ class Store {
                 value: ( type, payload ) => commit.call( store, type, payload ),
                 configurable: false,
                 writable: false
+            },
+            appliedMutation: {
+                value: '',
+                writable: true
             }
         } )
     }
 
     commit ( type, payload ) {
+        this.appliedMutation = type
         this.mutations[ type ]( this, payload )
     }
 
