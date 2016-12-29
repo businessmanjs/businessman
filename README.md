@@ -1,5 +1,7 @@
 Multi-thread State Management by the Worker API.
 
+![Businessman](https://aggre.gitlab.io/businessman/assets/businessman.png)
+
 # API
 
 ## Create Store
@@ -149,6 +151,39 @@ subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
 } )
 ```
 
-# Welcome your contribution!
+## Unsubscribe
+
+You can stop / delete subscribe.
+
+```
+import { unsubscribe } from 'businessman'
+
+unsubscribe( 'counter' ) // Delete all listeners subscribing to the store
+unsubscribe( 'counter', listener ) // Delete one listener
+```
+
+For store style ...
+
+```
+counter.unsubscribe( )
+counter.unsubscribe( listener )
+```
+
+## getState
+
+In Businessman `getState()` is also executed asynchronously.
+
+```
+counter.getState()
+.then( ( state ) => {
+    console.log( state )
+} )
+```
+
+# How to contribute
+
+See Board on GitLab.
+
+You can feel free to join anytime!
 
 [GitLab Project](https://gitlab.com/aggre/businessman/boards)
