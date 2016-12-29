@@ -1,16 +1,16 @@
-import businessman from '../src/businessman'
+import { install, dispatch, subscribe, unsubscribe  } from '../src/businessman'
 
 describe( 'businessman specs', function () {
 
     var stores
 
     it( 'Install Worker', function ( done ) {
-        businessman.subscribe( 'CREATE_CLIENT_STORE', ( data ) => {
+        subscribe( 'CREATE_CLIENT_STORE', ( data ) => {
             stores = data
             expect( data ).to.be.ok()
             done()
         } )
-        businessman.install( '/dist/test-worker.js' )
+        install( '/dist/test-worker.js' )
     } )
 
     it( 'Store for clients includes dispatch() and subscribe()', function () {
@@ -54,28 +54,28 @@ describe( 'businessman specs', function () {
     } )
 
     it( 'Dispatch and subscribe from the Businessman', function ( done ) {
-        businessman.dispatch( 'counter', 'increment', 1 )
-        businessman.subscribe( 'counter', function ( state ) {
+        dispatch( 'counter', 'increment', 1 )
+        subscribe( 'counter', function ( state ) {
             expect( state ).to.be( 4 )
         } )
-        businessman.dispatch( 'message', 'update', 'This is a test' )
-        businessman.subscribe( 'message', function ( state ) {
+        dispatch( 'message', 'update', 'This is a test' )
+        subscribe( 'message', function ( state ) {
             expect( state ).to.be( 'This is a test' )
             done()
         } )
     } )
 
     it( 'Unsubscribe from the client Businessman', function ( done ) {
-        businessman.unsubscribe( 'counter' )
+        unsubscribe( 'counter' )
         let i = 0,
             counterSubscriber = function () {
                 i++
             }
-        businessman.subscribe( 'counter', counterSubscriber )
-        businessman.dispatch( 'counter', 'increment' )
+        subscribe( 'counter', counterSubscriber )
+        dispatch( 'counter', 'increment' )
         setTimeout( function () {
-            businessman.unsubscribe( 'counter', counterSubscriber )
-            businessman.dispatch( 'counter', 'increment' )
+            unsubscribe( 'counter', counterSubscriber )
+            dispatch( 'counter', 'increment' )
             expect( i ).to.be( 1 )
             done()
         }, 500 )
