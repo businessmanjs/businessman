@@ -157,16 +157,6 @@ var pack = function ( type, payload ) {
     return { type: type, payload: payload }
 };
 
-var defineFreezeProperties = function ( target, name, value ) {
-    return Object.defineProperties( target, ( obj = {}, obj[ name ] = {
-            value: value,
-            enumerable: false,
-            writable: false,
-            configurable: false
-        }, obj ) )
-    var obj;
-};
-
 var Store = function Store ( opt ) {
     var state = opt.state;
     var type = opt.type;
@@ -225,11 +215,10 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 var INIT = 'INIT';
 var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
 
-var worker = {};
 var stores = {};
 var forFront = [];
 
-var api = {
+var worker = {
     start: function () {
         onmessage = function (e) {
             var storeType = e.data[ 0 ],
@@ -252,9 +241,7 @@ var api = {
     }
 };
 
-for ( var prop in api ) {
-    defineFreezeProperties( worker, prop, api[ prop ] );
-}
+var worker$1 = Object.freeze( worker );
 
 var _install = function ( path, worker ) {
     try {
@@ -321,4 +308,4 @@ subscribe( INIT, function ( data ) {
     }
 } );
 
-export { install, dispatch$1 as dispatch, subscribe, unsubscribe, worker };
+export { install, dispatch$1 as dispatch, subscribe, unsubscribe, worker$1 as worker };
