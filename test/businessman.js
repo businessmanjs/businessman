@@ -1,4 +1,4 @@
-import { install, dispatch, subscribe, unsubscribe, getState } from '../src/businessman'
+import { install, dispatch, manager, subscribe, unsubscribe, getState } from '../src/businessman'
 
 describe( 'businessman specs', function () {
 
@@ -104,6 +104,18 @@ describe( 'businessman specs', function () {
         getState( 'counter' )
         .then( ( state ) => {
             expect( state ).to.be( 123456789 )
+            done()
+        } )
+    } )
+
+    it( 'Execute action crossed to multiple stores by manager', function ( done ) {
+        manager( 'countUpMessage', 1 )
+        stores.counter.subscribe( ( state ) => {
+            expect( state ).to.be( 123456789 + 1 )
+        } )
+        stores.message.unsubscribe()
+        stores.message.subscribe( ( state ) => {
+            expect( state ).to.be( '1 has been added to the counter' )
             done()
         } )
     } )
