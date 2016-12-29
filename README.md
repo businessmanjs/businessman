@@ -7,9 +7,7 @@ Multi-thread State Management by the Worker API.
 Outline
 
 ```
-import businessman from 'businessman'
-
-const worker = businessman.worker
+import { worker } from 'businessman'
 
 worker.registerStore( {
     type: 'counter',
@@ -76,18 +74,16 @@ increment: ( store, num = 1 ) => {
 
 ## Start worker
 
-Call `businessman.worker.start()` to start a worker.
+Call `worker.start()` to start a worker.
 
 ```
-businessman.worker.start()
+worker.start()
 ```
 
 When added to the source of the Create Store as shown earlier, it becomes as follows.
 
 ```
-import businessman from 'businessman'
-
-const worker = businessman.worker
+import { worker } from 'businessman'
 
 worker.registerStore( {
     type: 'counter',
@@ -112,7 +108,9 @@ worker.start()
 Install workers and start state management.
 
 ```
-businessman.install( '/path/to/worker.js' )
+import { install } from 'businessman'
+
+install( '/path/to/worker.js' )
 ```
 
 ATTENTION
@@ -121,9 +119,11 @@ ATTENTION
 ## Dispatch and Subscribe
 
 ```
-businessman.dispatch( 'counter', 'increment', 1 )
+import { dispatch, subscribe } from 'businessman'
 
-businessman.subscribe( 'counter', ( state ) => {
+dispatch( 'counter', 'increment', 1 )
+
+subscribe( 'counter', ( state ) => {
     console.log( state ) // 1
 } )
 ```
@@ -143,7 +143,7 @@ The store style is available after the store in the worker has been created for 
 ```
 let counter
 
-businessman.subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
+subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
     console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...} } }
     counter = stores.counter
 } )

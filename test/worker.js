@@ -1,6 +1,4 @@
-import businessman from '../src/businessman'
-
-const worker = businessman.worker
+import { worker } from '../src/businessman'
 
 worker.registerStore( {
     type: 'counter',

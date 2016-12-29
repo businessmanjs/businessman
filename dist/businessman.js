@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.businessman = factory());
-}(this, (function () { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+	typeof define === 'function' && define.amd ? define(['exports'], factory) :
+	(factory((global.businessman = global.businessman || {})));
+}(this, (function (exports) { 'use strict';
 
 /* eslint-disable no-unused-vars */
 var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -323,7 +323,7 @@ var worker = {};
 var stores = {};
 var forFront = [];
 
-var api$1 = {
+var api = {
     start: function () {
         onmessage = function (e) {
             var storeType = e.data[ 0 ],
@@ -346,11 +346,11 @@ var api$1 = {
     }
 };
 
-for ( var prop$1 in api$1 ) {
-    defineFreezeProperties( worker, prop$1, api$1[ prop$1 ] );
+for ( var prop in api ) {
+    defineFreezeProperties( worker, prop, api[ prop ] );
 }
 
-var install = function ( path, worker ) {
+var _install = function ( path, worker ) {
     try {
         worker = new Worker( path );
         worker.onmessage = function ( message ) { return trigger( message.data ); };
@@ -360,7 +360,7 @@ var install = function ( path, worker ) {
     }
 };
 
-var dispatch$1 = function ( storeType, actionType, payload, worker ) {
+var _dispatch = function ( storeType, actionType, payload, worker ) {
     try {
         worker.postMessage( [ storeType, actionType, payload ] );
     } catch ( e ) {
@@ -368,7 +368,7 @@ var dispatch$1 = function ( storeType, actionType, payload, worker ) {
     }
 };
 
-var subscribe = function ( type, cb ) {
+var _subscribe = function ( type, cb ) {
     try {
         on( type, cb );
     } catch ( e ) {
@@ -376,7 +376,7 @@ var subscribe = function ( type, cb ) {
     }
 };
 
-var unsubscribe = function ( type, cb ) {
+var _unsubscribe = function ( type, cb ) {
     try {
         off( type, cb );
     } catch ( e ) {
@@ -384,22 +384,14 @@ var unsubscribe = function ( type, cb ) {
     }
 };
 
-var businessman = {};
 var businessmanWoker = null;
 
-var api = {
-    install: function ( path ) {
-        businessmanWoker = install( path, businessmanWoker );
-    },
-    dispatch: function ( storeType, actionType, payload ) { return dispatch$1( storeType, actionType, payload, businessmanWoker ); },
-    subscribe: function ( type, cb ) { return subscribe( type, cb ); },
-    unsubscribe: function ( type, cb ) { return unsubscribe( type, cb ); },
-    worker: worker
-};
-
-for ( var prop in api ) {
-    defineFreezeProperties( businessman, prop, api[ prop ] );
-}
+var install = function ( path ) {
+        businessmanWoker = _install( path, businessmanWoker );
+    };
+var dispatch$1 = function ( storeType, actionType, payload ) { return _dispatch( storeType, actionType, payload, businessmanWoker ); };
+var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
+var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 
 subscribe( INIT, function ( data ) {
     var stores = {};
@@ -407,7 +399,7 @@ subscribe( INIT, function ( data ) {
         data.stores.map( function ( store ) {
             stores[ store.type ] = {
                 dispatch: function ( actionType, payload ) {
-                    dispatch$1( store.type, actionType, payload, businessmanWoker );
+                    dispatch$1( store.type, actionType, payload );
                 },
                 subscribe: function ( cb ) {
                     subscribe( store.type, cb );
@@ -423,6 +415,12 @@ subscribe( INIT, function ( data ) {
     }
 } );
 
-return businessman;
+exports.install = install;
+exports.dispatch = dispatch$1;
+exports.subscribe = subscribe;
+exports.unsubscribe = unsubscribe;
+exports.worker = worker;
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 })));

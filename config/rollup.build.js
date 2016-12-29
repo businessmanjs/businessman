@@ -4,8 +4,7 @@ const rollup = require( 'rollup' ),
     commonjs = require( 'rollup-plugin-commonjs' ),
     name = 'businessman'
 
-rollup
-.rollup( {
+rollup.rollup( {
     entry: `src/${ name }.js`,
     plugins: [
         npm( { jsnext: true } ),
