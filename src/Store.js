@@ -1,39 +1,39 @@
-import objectAssign from 'object-assign'
 import { pack } from './util'
 
 class Store {
     constructor ( opt ) {
-        opt = objectAssign( {
-            type: '',
-            state: null,
-            mutations: {},
-            actions: {}
-        }, opt )
-
+        let {
+            state
+        } = opt
+        const {
+            type,
+            mutations,
+            actions
+        } = opt
         const store = this
         const { dispatch, commit } = this
 
         Object.defineProperties( this, {
             type: {
-                value: opt.type,
+                value: type,
                 enumerable: false,
                 writable: false,
                 configurable: false
             },
             state: {
-                get: () => opt.state,
-                set: state => {
-                    opt.state = state
-                    postMessage( pack( opt.type, opt.state ) )
+                get: () => state,
+                set: newState => {
+                    state = newState
+                    postMessage( pack( type, state ) )
                 }
             },
             mutations: {
-                value: opt.mutations,
+                value: mutations,
                 configurable: false,
                 writable: false
             },
             actions: {
-                value: opt.actions,
+                value: actions,
                 configurable: false,
                 writable: false
             },
