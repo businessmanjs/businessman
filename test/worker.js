@@ -4,19 +4,19 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( store, num ) => {
-            store.state += num
+        increment: ( set, state, num ) => {
+            set( state += num )
         },
-        set: ( store, num ) => {
-            store.state = num
+        set: ( set, state, num ) => {
+            set( num )
         }
     },
     actions: {
-        increment: ( store, num = 1 ) => {
-            store.commit( 'increment', num )
+        increment: ( commit, num = 1 ) => {
+            commit( 'increment', num )
         },
-        set: ( store, num = 0 ) => {
-            store.commit( 'set', num )
+        set: ( commit, num = 0 ) => {
+            commit( 'set', num )
         }
     }
 } )
@@ -25,13 +25,13 @@ worker.registerStore( {
     type: 'message',
     state: '',
     mutations: {
-        update: ( store, mes ) => {
-            store.state = mes
+        update: ( set, state, mes ) => {
+            set( mes )
         }
     },
     actions: {
-        update: ( store, mes = '' ) => {
-            store.commit( 'update', mes )
+        update: ( commit, mes = '' ) => {
+            commit( 'update', mes )
         }
     }
 } )

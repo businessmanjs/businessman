@@ -1,7 +1,7 @@
 import { GET_STATE } from '../behaviorTypes'
 
 const mutations = {
-    [ GET_STATE ]: ( store ) => store.state = store.state
+    [ GET_STATE ]: ( set, state ) => set( state )
 }
 
 export default mutations

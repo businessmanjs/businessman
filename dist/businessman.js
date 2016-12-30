@@ -10,10 +10,10 @@ var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
 var GET_STATE = 'GET_STATE';
 
 var mutations = {};
-mutations[ GET_STATE ] = function ( store ) { return store.state = store.state; };
+mutations[ GET_STATE ] = function ( set, state ) { return set( state ); };
 
 var actions = {};
-actions[ GET_STATE ] = function ( store ) { return store.commit( GET_STATE ); };
+actions[ GET_STATE ] = function ( commit ) { return commit( GET_STATE ); };
 
 var observable = function(el) {
 
@@ -189,6 +189,13 @@ var Store = function Store ( opt ) {
     var dispatch = ref.dispatch;
     var commit = ref.commit;
 
+    var _state = {
+        get: function () { return state; },
+        set: function (newState) {
+            state = newState;
+            postMessage( pack( type, state, store.appliedMutation ) );
+        }
+    };
     mutations$$1 = assign( mutations$$1, mutations );
     actions$$1 = assign( actions$$1, actions );
 
@@ -198,13 +205,6 @@ var Store = function Store ( opt ) {
             enumerable: false,
             writable: false,
             configurable: false
-        },
-        state: {
-            get: function () { return state; },
-            set: function (newState) {
-                state = newState;
-                postMessage( pack( type, state, store.appliedMutation ) );
-            }
         },
         mutations: {
             value: mutations$$1,
@@ -222,7 +222,7 @@ var Store = function Store ( opt ) {
             writable: false
         },
         commit: {
-            value: function ( type, payload ) { return commit.call( store, type, payload ); },
+            value: function ( type, payload ) { return commit.call( store, _state, type, payload ); },
             configurable: false,
             writable: false
         },
@@ -233,13 +233,13 @@ var Store = function Store ( opt ) {
     } );
 };
 
-Store.prototype.commit = function commit ( type, payload ) {
+Store.prototype.commit = function commit ( state, type, payload ) {
     this.appliedMutation = type;
-    this.mutations[ type ]( this, payload );
+    this.mutations[ type ]( state.set, state.get(), payload );
 };
 
 Store.prototype.dispatch = function dispatch ( type, payload ) {
-    this.actions[ type ]( this, payload );
+    this.actions[ type ]( this.commit, payload );
 };
 
 var stores = {};
