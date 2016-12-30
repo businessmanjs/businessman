@@ -298,7 +298,7 @@ var dispatch$2 = function ( storeType, actionType, payload, worker ) {
     worker.postMessage( [ storeType, actionType, payload ] );
 };
 
-var _manager = function ( managerType, payload, worker ) {
+var _operate = function ( managerType, payload, worker ) {
     worker.postMessage( [ managerType, payload ] );
 };
 
@@ -337,7 +337,7 @@ var install = function ( path ) {
         businessmanWoker = _install( path, businessmanWoker );
     };
 var dispatch$1 = function ( storeType, actionType, payload ) { return dispatch$2( storeType, actionType, payload, businessmanWoker ); };
-var manager = function ( managerType, payload ) { return _manager( managerType, payload, businessmanWoker ); };
+var operate = function ( managerType, payload ) { return _operate( managerType, payload, businessmanWoker ); };
 var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
 var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
 var getState = function ( storeType ) { return _getState( storeType, businessmanWoker ); };
@@ -364,7 +364,7 @@ subscribe( INIT, function ( data ) {
 
 exports.install = install;
 exports.dispatch = dispatch$1;
-exports.manager = manager;
+exports.operate = operate;
 exports.subscribe = subscribe;
 exports.unsubscribe = unsubscribe;
 exports.getState = getState;

@@ -90,12 +90,12 @@ worker.registerManager( {
 } )
 ```
 
-Call `manager()` with manager type and payload specified.
+Call `operate()` with manager type and payload specified.
 
 ```
-import { manager } from 'businessman'
+import { operate } from 'businessman'
 
-manager( 'countUpMessage', 1 )
+operate( 'countUpMessage', 1 )
 ```
 
 ## Start worker
