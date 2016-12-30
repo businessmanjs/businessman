@@ -15,6 +15,13 @@ class Store {
         const store = this
         const { dispatch, commit } = this
 
+        let _state = {
+            get: () => state,
+            set: newState => {
+                state = newState
+                postMessage( pack( type, state, store.appliedMutation ) )
+            }
+        }
         mutations = assign( mutations, builtInMutations )
         actions = assign( actions, builtInActions )
 
@@ -24,13 +31,6 @@ class Store {
                 enumerable: false,
                 writable: false,
                 configurable: false
-            },
-            state: {
-                get: () => state,
-                set: newState => {
-                    state = newState
-                    postMessage( pack( type, state, store.appliedMutation ) )
-                }
             },
             mutations: {
                 value: mutations,
@@ -48,7 +48,7 @@ class Store {
                 writable: false
             },
             commit: {
-                value: ( type, payload ) => commit.call( store, type, payload ),
+                value: ( type, payload ) => commit.call( store, _state, type, payload ),
                 configurable: false,
                 writable: false
             },
@@ -59,13 +59,13 @@ class Store {
         } )
     }
 
-    commit ( type, payload ) {
+    commit ( state, type, payload ) {
         this.appliedMutation = type
-        this.mutations[ type ]( this, payload )
+        this.mutations[ type ]( state.set, state.get(), payload )
     }
 
     dispatch ( type, payload ) {
-        this.actions[ type ]( this, payload )
+        this.actions[ type ]( this.commit, payload )
     }
 
 }

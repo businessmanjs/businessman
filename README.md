@@ -15,13 +15,13 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( store, num ) => {
-            store.state += num
+        increment: ( set, state, num ) => {
+            set( state += num )
         }
     },
     actions: {
-        increment: ( store, num = 1 ) => {
-            store.commit( 'increment', num )
+        increment: ( commit, num = 1 ) => {
+            commit( 'increment', num )
         }
     }
 } )
@@ -47,13 +47,11 @@ state: 0
 
 Change the state. After that, the new state is automatically notified to the main thread.
 
-The first argument of the mutation is the store instance.
-
-For example, to update the state by changing the `store.state`.
+Pass the new value to the function of the first argument of the mutation. The current state and payload are provided from other arguments.
 
 ```
-increment: ( store, num ) => {
-    store.state += num
+increment: ( set, state, num ) => {
+    set( state += num )
 }
 ```
 
@@ -64,13 +62,11 @@ ATTENTION
 
 Execute the mutation. Asynchronous processing can be placed on the action.
 
-The first argument of the action is the store instance.
-
-For example, call `store.commit()` to execute the mutation.
+Pass the mutation name to the function of the first argument of the action. The payload is provided from the second argument.
 
 ```
-increment: ( store, num = 1 ) => {
-    store.commit( 'increment', num )
+increment: ( commit, num = 1 ) => {
+    commit( 'increment', num )
 }
 ```
 
@@ -119,13 +115,13 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( store, num ) => {
-            store.state += num
+        increment: ( set, state, num ) => {
+            set( state += num )
         }
     },
     actions: {
-        increment: ( store, num = 1 ) => {
-            store.commit( 'increment', num )
+        increment: ( commit, num = 1 ) => {
+            commit( 'increment', num )
         }
     }
 } )
