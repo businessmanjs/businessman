@@ -6,7 +6,7 @@ Multi-thread State Management by the Worker API.
 
 ## Create Store
 
-Outline
+Overview
 
 ```
 import { worker } from 'businessman'
