@@ -4,7 +4,7 @@ var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
 var GET_STATE = 'GET_STATE';
 
 var mutations = {};
-mutations[ GET_STATE ] = function ( set, state ) { return set( state ); };
+mutations[ GET_STATE ] = function ( state ) { return state; };
 
 var actions = {};
 actions[ GET_STATE ] = function ( commit ) { return commit( GET_STATE ); };
@@ -229,7 +229,7 @@ var Store = function Store ( opt ) {
 
 Store.prototype.commit = function commit ( state, type, payload ) {
     this.appliedMutation = type;
-    this.mutations[ type ]( state.set, state.get(), payload );
+    state.set( this.mutations[ type ]( state.get(), payload ) );
 };
 
 Store.prototype.dispatch = function dispatch ( type, payload ) {

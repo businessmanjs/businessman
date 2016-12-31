@@ -4,11 +4,11 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( set, state, num ) => {
-            set( state += num )
+        increment: ( state, num ) => {
+            return state += num
         },
-        set: ( set, state, num ) => {
-            set( num )
+        set: ( state, num ) => {
+            return num
         }
     },
     actions: {
@@ -25,8 +25,8 @@ worker.registerStore( {
     type: 'message',
     state: '',
     mutations: {
-        update: ( set, state, mes ) => {
-            set( mes )
+        update: ( state, mes ) => {
+            return mes
         }
     },
     actions: {
