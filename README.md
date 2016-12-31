@@ -47,11 +47,13 @@ state: 0
 
 Change the state. After that, the new state is automatically notified to the main thread.
 
-Pass the new value to the function of the first argument of the mutation. The current state and payload are provided from other arguments.
+It will receive the current state and payload and return the new value.
+
+The state is changed and the main thread is notified.
 
 ```
-increment: ( set, state, num ) => {
-    set( state += num )
+increment: ( state, num ) => {
+    return state += num
 }
 ```
 

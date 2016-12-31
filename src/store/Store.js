@@ -61,7 +61,7 @@ class Store {
 
     commit ( state, type, payload ) {
         this.appliedMutation = type
-        this.mutations[ type ]( state.set, state.get(), payload )
+        state.set( this.mutations[ type ]( state.get(), payload ) )
     }
 
     dispatch ( type, payload ) {
