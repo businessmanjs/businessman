@@ -15,8 +15,8 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( set, state, num ) => {
-            set( state += num )
+        increment: ( state, num ) => {
+            return state += num
         }
     },
     actions: {
@@ -117,8 +117,8 @@ worker.registerStore( {
     type: 'counter',
     state: 0,
     mutations: {
-        increment: ( set, state, num ) => {
-            set( state += num )
+        increment: ( state, num ) => {
+            return state += num
         }
     },
     actions: {
