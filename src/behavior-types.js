@@ -7,4 +7,4 @@ export {
     INIT,
     CREATE_CLIENT_STORE,
     CREATE_CLIENT_MANAGER,
-    GET_STATE }
+    GET_STATE}

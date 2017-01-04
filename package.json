@@ -5,11 +5,11 @@
   "main": "dist/businessman.js",
   "jsnext:main": "src/businessman.js",
   "scripts": {
-    "test": "karma start config/karma.conf.js",
+    "test": "xo && karma start config/karma.conf.js",
     "pretest": "npm run build && node config/rollup.build.test.js",
     "posttest": "rm dist/test-*.js",
     "build": "node config/rollup.build.js",
-    "prebuild": "eslint src, test"
+    "prebuild": "xo"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,6 @@
     "riot-observable": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^3.12.2",
     "expect.js": "^0.3.1",
     "karma": "^1.3.0",
     "karma-mocha": "^1.3.0",
@@ -35,9 +34,16 @@
     "rollup": "^0.37.0",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-commonjs": "^6.0.1",
-    "rollup-plugin-node-resolve": "^2.0.0"
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "xo": "^0.17.1"
   },
   "directories": {
     "test": "test"
+  },
+  "xo": {
+    "envs": [
+      "worker"
+    ],
+    "semicolon": false
   }
 }
