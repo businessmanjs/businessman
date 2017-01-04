@@ -5,11 +5,10 @@ worker.registerStore({
 	state: 0,
 	mutations: {
 		increment: (state, num) => {
-			return state += num
+			let n = state += num
+			return n
 		},
-		set: (state, num) => {
-			return num
-		}
+		set: (state, num) => num
 	},
 	actions: {
 		increment: (commit, num = 1) => {
@@ -25,13 +24,11 @@ worker.registerStore({
 	type: 'message',
 	state: '',
 	mutations: {
-		update: (state, mes) => {
-			return mes
-		}
+		set: (state, mes) => mes
 	},
 	actions: {
-		update: (commit, mes = '') => {
-			commit('update', mes)
+		set: (commit, mes = '') => {
+			commit('set', mes)
 		}
 	}
 })
@@ -40,7 +37,7 @@ worker.registerManager({
 	type: 'countUpMessage',
 	handler: (stores, num = 1) => {
 		stores.counter.dispatch('increment', num)
-		stores.message.dispatch('update', `${num} has been added to the counter`)
+		stores.message.dispatch('set', `${num} has been added to the counter`)
 	}
 })
 

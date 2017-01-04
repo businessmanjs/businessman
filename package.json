@@ -41,6 +41,12 @@
     "test": "test"
   },
   "xo": {
+    "globals": [
+      "describe",
+      "it",
+      "expect",
+      "before"
+    ],
     "envs": [
       "worker"
     ],
