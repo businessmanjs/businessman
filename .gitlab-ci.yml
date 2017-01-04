@@ -9,6 +9,8 @@ test:
     script:
         - npm install --silent
         - npm test
+    only:
+        - develop
 
 pages:
     stage: pages
