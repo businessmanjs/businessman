@@ -1,6 +1,6 @@
 import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../src/businessman'
 
-describe( 'Businessman Default Style Specs', function () {
+describe( 'Businessman Default Style Specs', () => {
 	var stores
 	let initialize = false
 
@@ -32,7 +32,7 @@ describe( 'Businessman Default Style Specs', function () {
 		}
 	} )
 
-	it( 'Install Worker', function ( done ) {
+	it( 'Install Worker', done => {
 		subscribe( 'CREATE_CLIENT_STORE', data => {
 			stores = data
 			initialize = true
@@ -42,7 +42,7 @@ describe( 'Businessman Default Style Specs', function () {
 		install( '/dist/test-worker.js' )
 	} )
 
-	it( 'Store for clients includes dispatch() and subscribe()', function () {
+	it( 'Store for clients includes dispatch() and subscribe()', () => {
 		expect( stores ).to.be.ok()
 		let storeKeys = Object.keys( stores )
 		for ( let i = 0; i < storeKeys.length; i++ ) {
@@ -54,28 +54,28 @@ describe( 'Businessman Default Style Specs', function () {
 		}
 	} )
 
-	it( 'Dispatch and subscribe', function ( done ) {
+	it( 'Dispatch and subscribe', done => {
 		dispatch( 'counter', 'increment', 1 )
-		subscribe( 'counter', function ( state, applied ) {
+		subscribe( 'counter', ( state, applied ) => {
 			expect( state ).to.be( 1 )
 			expect( applied ).to.be( 'increment' )
 		} )
 		dispatch( 'message', 'set', 'This is a test' )
-		subscribe( 'message', function ( state, applied ) {
+		subscribe( 'message', ( state, applied ) => {
 			expect( state ).to.be( 'This is a test' )
 			expect( applied ).to.be( 'set' )
 			done()
 		} )
 	} )
 
-	it( 'Unsubscribe', function ( done ) {
+	it( 'Unsubscribe', done => {
 		let i = 0
-		let counterSubscriber = function () {
+		let counterSubscriber = () => {
 			i++
 		}
 		subscribe( 'counter', counterSubscriber )
 		dispatch( 'counter', 'increment' )
-		setTimeout( function () {
+		setTimeout( () => {
 			unsubscribe( 'counter', counterSubscriber )
 			dispatch( 'counter', 'increment' )
 			expect( i ).to.be( 1 )
@@ -83,7 +83,7 @@ describe( 'Businessman Default Style Specs', function () {
 		}, 500 )
 	} )
 
-	it( 'Get store state', function ( done ) {
+	it( 'Get store state', done => {
 		dispatch( 'counter', 'set', 123456 )
 		getState( 'counter' ).then( state => {
 			expect( state ).to.be( 123456 )
@@ -91,7 +91,7 @@ describe( 'Businessman Default Style Specs', function () {
 		} )
 	} )
 
-	it( 'Execute action crossed to multiple stores by manager', function ( done ) {
+	it( 'Execute action crossed to multiple stores by manager', done => {
 		operate( 'countUpMessage', 1 )
 		subscribe( 'counter', state => {
 			expect( state ).to.be( 1 )

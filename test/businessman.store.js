@@ -1,6 +1,6 @@
 import { install, subscribe } from '../src/businessman'
 
-describe( 'Businessman Store Style Specs', function () {
+describe( 'Businessman Store Style Specs', () => {
 	var stores
 	let initialize = false
 
@@ -32,7 +32,7 @@ describe( 'Businessman Store Style Specs', function () {
 		}
 	} )
 
-	it( 'Install Worker', function ( done ) {
+	it( 'Install Worker', done => {
 		subscribe( 'CREATE_CLIENT_STORE', data => {
 			stores = data
 			initialize = true
@@ -42,7 +42,7 @@ describe( 'Businessman Store Style Specs', function () {
 		install( '/dist/test-worker.js' )
 	} )
 
-	it( 'Store for clients includes dispatch() and subscribe()', function () {
+	it( 'Store for clients includes dispatch() and subscribe()', () => {
 		expect( stores ).to.be.ok()
 		let storeKeys = Object.keys( stores )
 		for ( let i = 0; i < storeKeys.length; i++ ) {
@@ -54,28 +54,28 @@ describe( 'Businessman Store Style Specs', function () {
 		}
 	} )
 
-	it( 'Dispatch and subscribe', function ( done ) {
+	it( 'Dispatch and subscribe', done => {
 		stores.counter.dispatch( 'increment', 1 )
-		stores.counter.subscribe( function ( state, applied ) {
+		stores.counter.subscribe( ( state, applied ) => {
 			expect( state ).to.be( 1 )
 			expect( applied ).to.be( 'increment' )
 		} )
 		stores.message.dispatch( 'set', 'This is a test' )
-		stores.message.subscribe( function ( state, applied ) {
+		stores.message.subscribe( ( state, applied ) => {
 			expect( state ).to.be( 'This is a test' )
 			expect( applied ).to.be( 'set' )
 			done()
 		} )
 	} )
 
-	it( 'Unsubscribe', function ( done ) {
+	it( 'Unsubscribe', done => {
 		let i = 0
-		let counterSubscriber = function () {
+		let counterSubscriber = () => {
 			i++
 		}
 		stores.counter.subscribe( counterSubscriber )
 		stores.counter.dispatch( 'increment' )
-		setTimeout( function () {
+		setTimeout( () => {
 			stores.counter.unsubscribe( counterSubscriber )
 			stores.counter.dispatch( 'increment' )
 			expect( i ).to.be( 1 )
@@ -83,7 +83,7 @@ describe( 'Businessman Store Style Specs', function () {
 		}, 500 )
 	} )
 
-	it( 'Get store state', function ( done ) {
+	it( 'Get store state', done => {
 		stores.counter.dispatch( 'set', 123456 )
 		stores.counter.getState().then( state => {
 			expect( state ).to.be( 123456 )
