@@ -1,9 +1,9 @@
-import {pack, assign} from '../util'
+import { pack, assign } from '../util'
 import builtInMutations from './mutations'
 import builtInActions from './actions'
 
 class Store {
-	constructor(opt) {
+	constructor ( opt ) {
 		let {
             state,
             mutations = {},
@@ -13,19 +13,19 @@ class Store {
             type
         } = opt
 		const store = this
-		const {dispatch, commit} = this
+		const { dispatch, commit } = this
 
 		let _state = {
 			get: () => state,
 			set: newState => {
 				state = newState
-				postMessage(pack(type, state, store.appliedMutation))
+				postMessage( pack( type, state, store.appliedMutation ) )
 			}
 		}
-		mutations = assign(mutations, builtInMutations)
-		actions = assign(actions, builtInActions)
+		mutations = assign( mutations, builtInMutations )
+		actions = assign( actions, builtInActions )
 
-		Object.defineProperties(this, {
+		Object.defineProperties( this, {
 			type: {
 				value: type,
 				enumerable: false,
@@ -43,12 +43,12 @@ class Store {
 				writable: false
 			},
 			dispatch: {
-				value: (type, payload) => dispatch.call(store, type, payload),
+				value: ( type, payload ) => dispatch.call( store, type, payload ),
 				configurable: false,
 				writable: false
 			},
 			commit: {
-				value: (type, payload) => commit.call(store, _state, type, payload),
+				value: ( type, payload ) => commit.call( store, _state, type, payload ),
 				configurable: false,
 				writable: false
 			},
@@ -56,16 +56,16 @@ class Store {
 				value: '',
 				writable: true
 			}
-		})
+		} )
 	}
 
-	commit(state, type, payload) {
+	commit ( state, type, payload ) {
 		this.appliedMutation = type
-		state.set(this.mutations[type](state.get(), payload))
+		state.set( this.mutations[ type ]( state.get(), payload ) )
 	}
 
-	dispatch(type, payload) {
-		this.actions[type](this.commit, payload)
+	dispatch ( type, payload ) {
+		this.actions[ type ]( this.commit, payload )
 	}
 
 }

@@ -1,7 +1,7 @@
-module.exports = function (config) {
-	config.set({
+module.exports = function ( config ) {
+	config.set( {
 		basePath: '../',
-		frameworks: ['mocha'],
+		frameworks: [ 'mocha' ],
 		plugins: [
 			'karma-mocha',
 			'karma-mocha-reporter',
@@ -19,8 +19,8 @@ module.exports = function (config) {
 		proxies: {
 			'/dist/': '/base/dist/'
 		},
-		browsers: ['PhantomJS'],
-		reporters: ['mocha'],
+		browsers: [ 'PhantomJS' ],
+		reporters: [ 'mocha' ],
 		singleRun: true
-	})
+	} )
 }

@@ -125,44 +125,44 @@ var observable = function(el) {
 };
 
 var o = new function () {
-	observable(this);
+	observable( this );
 }();
 
-var trigger = function (data) {
-	o.trigger(data.type, data.payload, data.applied);
+var trigger = function ( data ) {
+	o.trigger( data.type, data.payload, data.applied );
 };
 
-var on = function (type, cb) {
-	o.on(type, cb);
+var on = function ( type, cb ) {
+	o.on( type, cb );
 };
 
-var off = function (type, cb) {
-	if (cb) {
-		o.off(type, cb);
-	}	else {
-		o.off(type);
+var off = function ( type, cb ) {
+	if ( cb ) {
+		o.off( type, cb );
+	} else {
+		o.off( type );
 	}
 };
 
-var pack = function (type, payload, applied) {
+var pack = function ( type, payload, applied ) {
 	if ( type === void 0 ) type = '';
 	if ( payload === void 0 ) payload = {};
 
-	if (applied) {
-		return {type: type, payload: payload, applied: applied}
+	if ( applied ) {
+		return { type: type, payload: payload, applied: applied }
 	}
-	return {type: type, payload: payload}
+	return { type: type, payload: payload }
 };
 
-var assign = function (target, sources) {
+var assign = function ( target, sources ) {
 	try {
-		return Object.assign(target, sources)
-	} catch (err) {
-		var keys = Object.keys(sources);
-		for (var i = 0; i < keys.length; i++) {
-			var key = keys[i];
-			if (!(key in target)) {
-				target[key] = sources[key];
+		return Object.assign( target, sources )
+	} catch ( err ) {
+		var keys = Object.keys( sources );
+		for ( var i = 0; i < keys.length; i++ ) {
+			var key = keys[ i ];
+			if ( !( key in target ) ) {
+				target[ key ] = sources[ key ];
 			}
 		}
 		return target
@@ -175,12 +175,12 @@ var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
 var GET_STATE = 'GET_STATE';
 
 var mutations = {};
-mutations[GET_STATE] = function (state) { return state; };
+mutations[ GET_STATE ] = function (state) { return state; };
 
 var actions = {};
-actions[GET_STATE] = function (commit) { return commit(GET_STATE); };
+actions[ GET_STATE ] = function (commit) { return commit( GET_STATE ); };
 
-var Store = function Store(opt) {
+var Store = function Store ( opt ) {
 	var state = opt.state;
 	var mutations$$1 = opt.mutations; if ( mutations$$1 === void 0 ) mutations$$1 = {};
 	var actions$$1 = opt.actions; if ( actions$$1 === void 0 ) actions$$1 = {};
@@ -194,13 +194,13 @@ var Store = function Store(opt) {
 		get: function () { return state; },
 		set: function (newState) {
 			state = newState;
-			postMessage(pack(type, state, store.appliedMutation));
+			postMessage( pack( type, state, store.appliedMutation ) );
 		}
 	};
-	mutations$$1 = assign(mutations$$1, mutations);
-	actions$$1 = assign(actions$$1, actions);
+	mutations$$1 = assign( mutations$$1, mutations );
+	actions$$1 = assign( actions$$1, actions );
 
-	Object.defineProperties(this, {
+	Object.defineProperties( this, {
 		type: {
 			value: type,
 			enumerable: false,
@@ -218,12 +218,12 @@ var Store = function Store(opt) {
 			writable: false
 		},
 		dispatch: {
-			value: function (type, payload) { return dispatch.call(store, type, payload); },
+			value: function ( type, payload ) { return dispatch.call( store, type, payload ); },
 			configurable: false,
 			writable: false
 		},
 		commit: {
-			value: function (type, payload) { return commit.call(store, _state, type, payload); },
+			value: function ( type, payload ) { return commit.call( store, _state, type, payload ); },
 			configurable: false,
 			writable: false
 		},
@@ -231,16 +231,16 @@ var Store = function Store(opt) {
 			value: '',
 			writable: true
 		}
-	});
+	} );
 };
 
-Store.prototype.commit = function commit (state, type, payload) {
+Store.prototype.commit = function commit ( state, type, payload ) {
 	this.appliedMutation = type;
-	state.set(this.mutations[type](state.get(), payload));
+	state.set( this.mutations[ type ]( state.get(), payload ) );
 };
 
-Store.prototype.dispatch = function dispatch (type, payload) {
-	this.actions[type](this.commit, payload);
+Store.prototype.dispatch = function dispatch ( type, payload ) {
+	this.actions[ type ]( this.commit, payload );
 };
 
 var stores = {};
@@ -254,117 +254,117 @@ var worker = {
 	start: function () {
 		onmessage = function (e) {
 			var data = e.data;
-			if (data.length > 2) {
-				stores[data[0]].dispatch(data[1], data[2]);
-			}			else if (data.length > 1) {
-				managers[data[0]](stores, data[1]);
+			if ( data.length > 2 ) {
+				stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] );
+			} else if ( data.length > 1 ) {
+				managers[ data[ 0 ] ]( stores, data[ 1 ] );
 			}
 		};
-		postMessage(pack(INIT, {stores: forClient.stores, managers: forClient.managers}));
+		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers } ) );
 	},
 	registerStore: function (config) {
-		var store = new Store(config);
+		var store = new Store( config );
 		var type = store.type;
 		var actions = store.actions;
-		if (!(type in stores)) {
-			stores[type] = store;
-			forClient.stores.push({
+		if ( !( type in stores ) ) {
+			stores[ type ] = store;
+			forClient.stores.push( {
 				type: type,
-				actions: Object.keys(actions)
-			});
+				actions: Object.keys( actions )
+			} );
 		}
 	},
 	registerManager: function (config) {
 		var type = config.type;
 		var handler = config.handler;
-		if (!(type in managers)) {
-			managers[type] = handler;
-			forClient.managers.push({
+		if ( !( type in managers ) ) {
+			managers[ type ] = handler;
+			forClient.managers.push( {
 				type: type
-			});
+			} );
 		}
 	}
 };
 
-var worker$1 = Object.freeze(worker);
+var worker$1 = Object.freeze( worker );
 
-var _install = function (path, worker) {
+var _install = function ( path, worker ) {
 	try {
-		worker = new Worker(path);
-		worker.onmessage = function (message) { return trigger(message.data); };
+		worker = new Worker( path );
+		worker.onmessage = function (message) { return trigger( message.data ); };
 		return worker
-	} catch (err) {
-		console.error('Error in install', err);
+	} catch ( err ) {
+		console.error( 'Error in install', err );
 	}
 };
 
-var dispatch$2 = function (storeType, actionType, payload, worker) {
-	worker.postMessage([storeType, actionType, payload]);
+var dispatch$2 = function ( storeType, actionType, payload, worker ) {
+	worker.postMessage( [ storeType, actionType, payload ] );
 };
 
-var _operate = function (managerType, payload, worker) {
-	worker.postMessage([managerType, payload]);
+var _operate = function ( managerType, payload, worker ) {
+	worker.postMessage( [ managerType, payload ] );
 };
 
-var subscribe$1 = function (type, cb) {
-	on(type, cb);
+var subscribe$1 = function ( type, cb ) {
+	on( type, cb );
 };
 
-var unsubscribe$1 = function (type, cb) {
-	off(type, cb);
+var unsubscribe$1 = function ( type, cb ) {
+	off( type, cb );
 };
 
-var _getState = function (storeType, worker) {
-	return new Promise(function (resolve, reject) {
-		var subscriber = function (state, applied) {
-			if (applied !== GET_STATE) {
+var _getState = function ( storeType, worker ) {
+	return new Promise( function ( resolve, reject ) {
+		var subscriber = function ( state, applied ) {
+			if ( applied !== GET_STATE ) {
 				return
 			}
-			unsubscribe$1(storeType, subscriber);
-			resolve(state);
+			unsubscribe$1( storeType, subscriber );
+			resolve( state );
 		};
 
-		subscribe$1(storeType, subscriber);
+		subscribe$1( storeType, subscriber );
 
 		try {
-			dispatch$2(storeType, GET_STATE, '', worker);
-		} catch (err) {
-			reject(err);
-			unsubscribe$1(storeType, subscriber);
+			dispatch$2( storeType, GET_STATE, '', worker );
+		} catch ( err ) {
+			reject( err );
+			unsubscribe$1( storeType, subscriber );
 		}
-	})
+	} )
 };
 
 var businessmanWoker = null;
 
 var install = function (path) {
-	businessmanWoker = _install(path, businessmanWoker);
+	businessmanWoker = _install( path, businessmanWoker );
 };
-var dispatch$1 = function (storeType, actionType, payload) { return dispatch$2(storeType, actionType, payload, businessmanWoker); };
-var operate = function (managerType, payload) { return _operate(managerType, payload, businessmanWoker); };
-var subscribe = function (type, cb) { return subscribe$1(type, cb); };
-var unsubscribe = function (type, cb) { return unsubscribe$1(type, cb); };
-var getState = function (storeType) { return _getState(storeType, businessmanWoker); };
+var dispatch$1 = function ( storeType, actionType, payload ) { return dispatch$2( storeType, actionType, payload, businessmanWoker ); };
+var operate = function ( managerType, payload ) { return _operate( managerType, payload, businessmanWoker ); };
+var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
+var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
+var getState = function (storeType) { return _getState( storeType, businessmanWoker ); };
 
-subscribe(INIT, function (data) {
+subscribe( INIT, function (data) {
 	var stores = {};
 	var managers = {};
 	try {
-		data.stores.map(function (store) {
-			stores[store.type] = {
-				dispatch: function (actionType, payload) { return dispatch$1(store.type, actionType, payload); },
-				subscribe: function (cb) { return subscribe(store.type, cb); },
-				unsubscribe: function (cb) { return unsubscribe(store.type, cb); },
-				getState: function () { return getState(store.type); }
+		data.stores.map( function (store) {
+			stores[ store.type ] = {
+				dispatch: function ( actionType, payload ) { return dispatch$1( store.type, actionType, payload ); },
+				subscribe: function (cb) { return subscribe( store.type, cb ); },
+				unsubscribe: function (cb) { return unsubscribe( store.type, cb ); },
+				getState: function () { return getState( store.type ); }
 			};
 			return store
-		});
-		trigger(pack(CREATE_CLIENT_STORE, stores));
+		} );
+		trigger( pack( CREATE_CLIENT_STORE, stores ) );
 		managers = data.managers;
-		trigger(pack(CREATE_CLIENT_MANAGER, managers));
-	} catch (err) {
-		console.error('Error in creating client store or client manager', err);
+		trigger( pack( CREATE_CLIENT_MANAGER, managers ) );
+	} catch ( err ) {
+		console.error( 'Error in creating client store or client manager', err );
 	}
-});
+} );
 
 export { install, dispatch$1 as dispatch, operate, subscribe, unsubscribe, getState, worker$1 as worker };
