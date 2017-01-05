@@ -2,17 +2,19 @@ const rollup = require( 'rollup' )
 const npm = require( 'rollup-plugin-node-resolve' )
 const buble = require( 'rollup-plugin-buble' )
 const commonjs = require( 'rollup-plugin-commonjs' )
+const multiEntry = require( 'rollup-plugin-multi-entry' )
 
 rollup.rollup( {
-	entry: 'test/businessman.js',
+	entry: 'test/businessman*.js',
 	plugins: [
 		npm( { jsnext: true } ),
 		buble(),
-		commonjs()
+		commonjs(),
+		multiEntry()
 	]
 } )
 .then( bundle => {
-	bundle.write( { format: 'iife', dest: 'dist/test-businessman.js' } )
+	bundle.write( { format: 'iife', moduleName: 'businessman', dest: 'dist/test-businessman.js' } )
 } )
 .catch( err => {
 	console.error( err )
