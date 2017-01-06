@@ -5,7 +5,7 @@ const commonjs = require( 'rollup-plugin-commonjs' )
 const multiEntry = require( 'rollup-plugin-multi-entry' )
 
 rollup.rollup( {
-	entry: 'test/businessman*.js',
+	entry: 'test/client/*.js',
 	plugins: [
 		npm( { jsnext: true } ),
 		buble(),

@@ -1,4 +1,4 @@
-import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../src/businessman'
+import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../../src/businessman'
 
 describe( 'Businessman Default Style Specs', () => {
 	var stores

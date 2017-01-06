@@ -70,7 +70,7 @@
     },
     "overrides": [
       {
-        "files": "test/*.js",
+        "files": "test/client/*.js",
         "globals": [
           "describe",
           "it",

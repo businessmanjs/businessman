@@ -1,4 +1,4 @@
-import { install, subscribe } from '../src/businessman'
+import { install, subscribe } from '../../src/businessman'
 
 describe( 'Businessman Store Style Specs', () => {
 	var stores
