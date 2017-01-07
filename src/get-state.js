@@ -1,12 +1,10 @@
-import dispatch from './dispatch'
 import subscribe from './subscribe'
 import unsubscribe from './unsubscribe'
-import { GET_STATE } from './behavior-types'
 
-export default ( storeType, worker ) => {
+export default ( storeType, getter = 'default', options, worker ) => {
 	return new Promise( ( resolve, reject ) => {
-		let subscriber = ( state, applied ) => {
-			if ( applied !== GET_STATE ) {
+		let subscriber = ( state, applied, got ) => {
+			if ( applied !== 'getState' || got !== getter ) {
 				return
 			}
 			unsubscribe( storeType, subscriber )
@@ -16,10 +14,10 @@ export default ( storeType, worker ) => {
 		subscribe( storeType, subscriber )
 
 		try {
-			dispatch( storeType, GET_STATE, '', worker )
+			worker.postMessage( [ 'getState', storeType, getter, options ] )
 		} catch ( err ) {
-			reject( err )
 			unsubscribe( storeType, subscriber )
+			reject( err )
 		}
 	} )
 }

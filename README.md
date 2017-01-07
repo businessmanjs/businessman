@@ -23,6 +23,11 @@ worker.registerStore( {
         increment: ( commit, num = 1 ) => {
             commit( 'increment', num )
         }
+    },
+	getters: {
+        absolute: ( state ) => {
+			return Math.abs( state )
+		}
     }
 } )
 ```
@@ -69,6 +74,26 @@ Pass the mutation name to the function of the first argument of the action. The 
 ```
 increment: ( commit, num = 1 ) => {
     commit( 'increment', num )
+}
+```
+
+### Getters
+
+Getters gets state by calculation.
+
+```
+absolute: ( state ) => {
+	return Math.abs( state )
+}
+```
+
+An option is provided for the second argument, and another Getter is provided for the third argument.
+
+```
+absolute: ( state, options, getters ) => {
+	// state: Current state
+	// options: Some option
+	// getters: All Getters in this store
 }
 ```
 
@@ -201,6 +226,15 @@ In Businessman `getState()` is also executed asynchronously.
 
 ```
 counter.getState()
+.then( ( state ) => {
+    console.log( state )
+} )
+```
+
+You can also specify Getter.
+
+```
+counter.getState( 'absolute' )
 .then( ( state ) => {
     console.log( state )
 } )

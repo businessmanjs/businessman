@@ -131,7 +131,7 @@ var o = new function () {
 }();
 
 var trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.applied );
+	o.trigger( data.type, data.payload, data.applied, data.getter );
 };
 
 var on = function ( type, cb ) {
@@ -146,10 +146,13 @@ var off = function ( type, cb ) {
 	}
 };
 
-var pack = function ( type, payload, applied ) {
+var pack = function ( type, payload, applied, getter ) {
 	if ( type === void 0 ) type = '';
 	if ( payload === void 0 ) payload = {};
 
+	if ( getter ) {
+		return { type: type, payload: payload, applied: applied, getter: getter }
+	}
 	if ( applied ) {
 		return { type: type, payload: payload, applied: applied }
 	}
@@ -171,26 +174,25 @@ var assign = function ( target, sources ) {
 	}
 };
 
-var INIT = 'INIT';
-var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
-var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
-var GET_STATE = 'GET_STATE';
+var getters$1 = {
+	default: function (state) { return state; }
+};
 
 var mutations = {};
-mutations[ GET_STATE ] = function (state) { return state; };
 
 var actions = {};
-actions[ GET_STATE ] = function (commit) { return commit( GET_STATE ); };
 
 var Store = function Store ( opt ) {
 	var state = opt.state;
 	var mutations$$1 = opt.mutations; if ( mutations$$1 === void 0 ) mutations$$1 = {};
 	var actions$$1 = opt.actions; if ( actions$$1 === void 0 ) actions$$1 = {};
+	var getters = opt.getters; if ( getters === void 0 ) getters = {};
 	var type = opt.type;
 	var store = this;
 	var ref = this;
 	var dispatch = ref.dispatch;
 	var commit = ref.commit;
+	var getState = ref.getState;
 
 	var _state = {
 		get: function () { return state; },
@@ -199,6 +201,7 @@ var Store = function Store ( opt ) {
 			postMessage( pack( type, state, store.appliedMutation ) );
 		}
 	};
+	getters = assign( getters, getters$1 );
 	mutations$$1 = assign( mutations$$1, mutations );
 	actions$$1 = assign( actions$$1, actions );
 
@@ -208,6 +211,11 @@ var Store = function Store ( opt ) {
 			enumerable: false,
 			writable: false,
 			configurable: false
+		},
+		getters: {
+			value: getters,
+			configurable: false,
+			writable: false
 		},
 		mutations: {
 			value: mutations$$1,
@@ -229,11 +237,23 @@ var Store = function Store ( opt ) {
 			configurable: false,
 			writable: false
 		},
+		getState: {
+			value: function ( type, payload ) { return getState.call( store, _state, type, payload ); },
+			configurable: false,
+			writable: false
+		},
 		appliedMutation: {
 			value: '',
 			writable: true
 		}
 	} );
+};
+
+Store.prototype.getState = function getState ( state, type, payload ) {
+		if ( type === void 0 ) type = 'default';
+
+	var get = this.getters[ type ]( state.get(), payload, this.getters );
+	postMessage( pack( this.type, get, 'getState', type ) );
 };
 
 Store.prototype.commit = function commit ( state, type, payload ) {
@@ -245,24 +265,38 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 	this.actions[ type ]( this.commit, payload );
 };
 
+var INIT = 'INIT';
+var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
+var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
+
 var stores = {};
 var managers = {};
+var getters = {};
 var forClient = {
 	stores: [],
-	managers: []
+	managers: [],
+	getters: []
 };
 
 var worker = {
 	start: function () {
 		onmessage = function (e) {
 			var data = e.data;
-			if ( data.length > 2 ) {
-				stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] );
-			} else if ( data.length > 1 ) {
-				managers[ data[ 0 ] ]( stores, data[ 1 ] );
+			switch ( data[ 0 ] ) {
+				case 'dispatch':
+					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] );
+					break
+				case 'operate':
+					managers[ data[ 1 ] ]( stores, data[ 2 ] );
+					break
+				case 'getState':
+					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] );
+					break
+				default:
+					break
 			}
 		};
-		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers } ) );
+		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } ) );
 	},
 	registerStore: function (config) {
 		var store = new Store( config );
@@ -272,7 +306,8 @@ var worker = {
 			stores[ type ] = store;
 			forClient.stores.push( {
 				type: type,
-				actions: Object.keys( actions )
+				actions: Object.keys( actions ),
+				getters: Object.keys( getters )
 			} );
 		}
 	},
@@ -300,12 +335,12 @@ var _install = function ( path, worker ) {
 	}
 };
 
-var dispatch$2 = function ( storeType, actionType, payload, worker ) {
-	worker.postMessage( [ storeType, actionType, payload ] );
+var _dispatch = function ( storeType, actionType, payload, worker ) {
+	worker.postMessage( [ 'dispatch', storeType, actionType, payload ] );
 };
 
 var _operate = function ( managerType, payload, worker ) {
-	worker.postMessage( [ managerType, payload ] );
+	worker.postMessage( [ 'operate', managerType, payload ] );
 };
 
 var subscribe$1 = function ( type, cb ) {
@@ -316,10 +351,12 @@ var unsubscribe$1 = function ( type, cb ) {
 	off( type, cb );
 };
 
-var _getState = function ( storeType, worker ) {
+var _getState = function ( storeType, getter, options, worker ) {
+	if ( getter === void 0 ) getter = 'default';
+
 	return new Promise( function ( resolve, reject ) {
-		var subscriber = function ( state, applied ) {
-			if ( applied !== GET_STATE ) {
+		var subscriber = function ( state, applied, got ) {
+			if ( applied !== 'getState' || got !== getter ) {
 				return
 			}
 			unsubscribe$1( storeType, subscriber );
@@ -329,10 +366,10 @@ var _getState = function ( storeType, worker ) {
 		subscribe$1( storeType, subscriber );
 
 		try {
-			dispatch$2( storeType, GET_STATE, '', worker );
+			worker.postMessage( [ 'getState', storeType, getter, options ] );
 		} catch ( err ) {
-			reject( err );
 			unsubscribe$1( storeType, subscriber );
+			reject( err );
 		}
 	} )
 };
@@ -342,28 +379,26 @@ var businessmanWoker = null;
 var install = function (path) {
 	businessmanWoker = _install( path, businessmanWoker );
 };
-var dispatch$1 = function ( storeType, actionType, payload ) { return dispatch$2( storeType, actionType, payload, businessmanWoker ); };
+var dispatch$1 = function ( storeType, actionType, payload ) { return _dispatch( storeType, actionType, payload, businessmanWoker ); };
 var operate = function ( managerType, payload ) { return _operate( managerType, payload, businessmanWoker ); };
 var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
 var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
-var getState = function (storeType) { return _getState( storeType, businessmanWoker ); };
+var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
 
 subscribe( INIT, function (data) {
 	var stores = {};
-	var managers = {};
 	try {
 		data.stores.map( function (store) {
 			stores[ store.type ] = {
 				dispatch: function ( actionType, payload ) { return dispatch$1( store.type, actionType, payload ); },
 				subscribe: function (cb) { return subscribe( store.type, cb ); },
 				unsubscribe: function (cb) { return unsubscribe( store.type, cb ); },
-				getState: function () { return getState( store.type ); }
+				getState: function ( getter, options ) { return getState$1( store.type, getter, options ); }
 			};
 			return store
 		} );
 		trigger( pack( CREATE_CLIENT_STORE, stores ) );
-		managers = data.managers;
-		trigger( pack( CREATE_CLIENT_MANAGER, managers ) );
+		trigger( pack( CREATE_CLIENT_MANAGER, data.managers ) );
 	} catch ( err ) {
 		console.error( 'Error in creating client store or client manager', err );
 	}
@@ -374,7 +409,7 @@ exports.dispatch = dispatch$1;
 exports.operate = operate;
 exports.subscribe = subscribe;
 exports.unsubscribe = unsubscribe;
-exports.getState = getState;
+exports.getState = getState$1;
 exports.worker = worker$1;
 
 Object.defineProperty(exports, '__esModule', { value: true });

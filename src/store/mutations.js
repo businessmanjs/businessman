@@ -1,7 +1,3 @@
-import { GET_STATE } from '../behavior-types'
-
-const mutations = {
-	[ GET_STATE ]: state => state
-}
+const mutations = {}
 
 export default mutations

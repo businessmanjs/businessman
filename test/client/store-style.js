@@ -90,4 +90,12 @@ describe( 'Businessman Store Style Specs', () => {
 			done()
 		} )
 	} )
+
+	it( 'Get store state by getters', done => {
+		stores.message.dispatch( 'set', 'This is a test' )
+		stores.message.getState( 'wordCount' ).then( state => {
+			expect( state ).to.be( 14 )
+			done()
+		} )
+	} )
 } )

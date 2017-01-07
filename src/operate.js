@@ -1,3 +1,3 @@
 export default ( managerType, payload, worker ) => {
-	worker.postMessage( [ managerType, payload ] )
+	worker.postMessage( [ 'operate', managerType, payload ] )
 }
