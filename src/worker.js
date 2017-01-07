@@ -4,22 +4,32 @@ import { INIT } from './behavior-types'
 
 let stores = {}
 let managers = {}
+let getters = {}
 let forClient = {
 	stores: [],
-	managers: []
+	managers: [],
+	getters: []
 }
 
 const worker = {
 	start: () => {
 		onmessage = e => {
 			const data = e.data
-			if ( data.length > 2 ) {
-				stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] )
-			} else if ( data.length > 1 ) {
-				managers[ data[ 0 ] ]( stores, data[ 1 ] )
+			switch ( data[ 0 ] ) {
+				case 'dispatch':
+					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] )
+					break
+				case 'operate':
+					managers[ data[ 1 ] ]( stores, data[ 2 ] )
+					break
+				case 'getState':
+					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] )
+					break
+				default:
+					break
 			}
 		}
-		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers } ) )
+		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } ) )
 	},
 	registerStore: config => {
 		const store = new Store( config )
@@ -31,7 +41,8 @@ const worker = {
 			stores[ type ] = store
 			forClient.stores.push( {
 				type: type,
-				actions: Object.keys( actions )
+				actions: Object.keys( actions ),
+				getters: Object.keys( getters )
 			} )
 		}
 	},

@@ -91,6 +91,14 @@ describe( 'Businessman Default Style Specs', () => {
 		} )
 	} )
 
+	it( 'Get store state by getters', done => {
+		dispatch( 'message', 'set', 'This is a test' )
+		getState( 'message', 'wordCount' ).then( state => {
+			expect( state ).to.be( 14 )
+			done()
+		} )
+	} )
+
 	it( 'Execute action crossed to multiple stores by manager', done => {
 		operate( 'countUpMessage', 1 )
 		subscribe( 'counter', state => {

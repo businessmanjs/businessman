@@ -1,4 +1,5 @@
 import { pack, assign } from '../util'
+import builtInGetters from './getters'
 import builtInMutations from './mutations'
 import builtInActions from './actions'
 
@@ -7,13 +8,14 @@ class Store {
 		let {
             state,
             mutations = {},
-            actions = {}
+            actions = {},
+			getters = {}
         } = opt
 		const {
             type
         } = opt
 		const store = this
-		const { dispatch, commit } = this
+		const { dispatch, commit, getState } = this
 
 		let _state = {
 			get: () => state,
@@ -22,6 +24,7 @@ class Store {
 				postMessage( pack( type, state, store.appliedMutation ) )
 			}
 		}
+		getters = assign( getters, builtInGetters )
 		mutations = assign( mutations, builtInMutations )
 		actions = assign( actions, builtInActions )
 
@@ -31,6 +34,11 @@ class Store {
 				enumerable: false,
 				writable: false,
 				configurable: false
+			},
+			getters: {
+				value: getters,
+				configurable: false,
+				writable: false
 			},
 			mutations: {
 				value: mutations,
@@ -52,11 +60,21 @@ class Store {
 				configurable: false,
 				writable: false
 			},
+			getState: {
+				value: ( type, payload ) => getState.call( store, _state, type, payload ),
+				configurable: false,
+				writable: false
+			},
 			appliedMutation: {
 				value: '',
 				writable: true
 			}
 		} )
+	}
+
+	getState ( state, type = 'default', payload ) {
+		const get = this.getters[ type ]( state.get(), payload, this.getters )
+		postMessage( pack( this.type, get, 'getState', type ) )
 	}
 
 	commit ( state, type, payload ) {

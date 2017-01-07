@@ -5,7 +5,7 @@ const o = new function () {
 }()
 
 export const trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.applied )
+	o.trigger( data.type, data.payload, data.applied, data.getter )
 }
 
 export const on = function ( type, cb ) {
@@ -20,7 +20,10 @@ export const off = function ( type, cb ) {
 	}
 }
 
-export const pack = function ( type = '', payload = {}, applied ) {
+export const pack = function ( type = '', payload = {}, applied, getter ) {
+	if ( getter ) {
+		return { type: type, payload: payload, applied: applied, getter: getter }
+	}
 	if ( applied ) {
 		return { type: type, payload: payload, applied: applied }
 	}

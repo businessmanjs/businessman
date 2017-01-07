@@ -23,6 +23,9 @@ worker.registerStore( {
 worker.registerStore( {
 	type: 'message',
 	state: '',
+	getters: {
+		wordCount: state => state.length
+	},
 	mutations: {
 		set: ( state, mes ) => mes
 	},
