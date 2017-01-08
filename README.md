@@ -77,6 +77,16 @@ increment: ( commit, num = 1 ) => {
 }
 ```
 
+If the third argument of commit is false, it does not provide state.
+
+In this case, the state passed to the subscriber is `null`.
+
+```
+increment: ( commit, num = 1 ) => {
+    commit( 'increment', num, false )
+}
+```
+
 ### Getters
 
 Getters gets state by calculation.
