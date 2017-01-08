@@ -3,8 +3,8 @@ import unsubscribe from './unsubscribe'
 
 export default ( storeType, getter = 'default', options, worker ) => {
 	return new Promise( ( resolve, reject ) => {
-		let subscriber = ( state, applied, got ) => {
-			if ( applied !== 'getState' || got !== getter ) {
+		let subscriber = ( state, m, got ) => {
+			if ( got !== getter ) {
 				return
 			}
 			unsubscribe( storeType, subscriber )

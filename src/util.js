@@ -5,7 +5,7 @@ const o = new function () {
 }()
 
 export const trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.applied, data.getter )
+	o.trigger( data.type, data.payload, data.mutation, data.getter )
 }
 
 export const on = function ( type, cb ) {
@@ -20,14 +20,14 @@ export const off = function ( type, cb ) {
 	}
 }
 
-export const pack = function ( type = '', payload = {}, applied, getter ) {
-	if ( getter ) {
-		return { type: type, payload: payload, applied: applied, getter: getter }
-	}
-	if ( applied ) {
-		return { type: type, payload: payload, applied: applied }
-	}
-	return { type: type, payload: payload }
+export const pack = function ( options ) {
+	const {
+		type = null,
+		payload = null,
+		mutation = null,
+		getter = null
+	} = options
+	return { type: type, payload: payload, mutation: mutation, getter: getter }
 }
 
 export const assign = function ( target, sources ) {

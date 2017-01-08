@@ -31,8 +31,8 @@ subscribe( INIT, data => {
 			}
 			return store
 		} )
-		trigger( pack( CREATE_CLIENT_STORE, stores ) )
-		trigger( pack( CREATE_CLIENT_MANAGER, data.managers ) )
+		trigger( pack( { type: CREATE_CLIENT_STORE, payload: stores } ) )
+		trigger( pack( { type: CREATE_CLIENT_MANAGER, payload: data.managers } ) )
 	} catch ( err ) {
 		console.error( 'Error in creating client store or client manager', err )
 	}

@@ -16,6 +16,9 @@ worker.registerStore( {
 		},
 		set: ( commit, num = 0 ) => {
 			commit( 'set', num )
+		},
+		silentSet: ( commit, num = 0 ) => {
+			commit( 'set', num, false )
 		}
 	}
 } )

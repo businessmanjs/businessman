@@ -129,7 +129,7 @@ var o = new function () {
 }();
 
 var trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.applied, data.getter );
+	o.trigger( data.type, data.payload, data.mutation, data.getter );
 };
 
 var on = function ( type, cb ) {
@@ -144,17 +144,12 @@ var off = function ( type, cb ) {
 	}
 };
 
-var pack = function ( type, payload, applied, getter ) {
-	if ( type === void 0 ) type = '';
-	if ( payload === void 0 ) payload = {};
-
-	if ( getter ) {
-		return { type: type, payload: payload, applied: applied, getter: getter }
-	}
-	if ( applied ) {
-		return { type: type, payload: payload, applied: applied }
-	}
-	return { type: type, payload: payload }
+var pack = function ( options ) {
+	var type = options.type; if ( type === void 0 ) type = null;
+	var payload = options.payload; if ( payload === void 0 ) payload = null;
+	var mutation = options.mutation; if ( mutation === void 0 ) mutation = null;
+	var getter = options.getter; if ( getter === void 0 ) getter = null;
+	return { type: type, payload: payload, mutation: mutation, getter: getter }
 };
 
 var assign = function ( target, sources ) {
@@ -194,9 +189,9 @@ var Store = function Store ( opt ) {
 
 	var _state = {
 		get: function () { return state; },
-		set: function (newState) {
+		set: function ( newState, mutationType, provide ) {
 			state = newState;
-			postMessage( pack( type, state, store.appliedMutation ) );
+			postMessage( ( provide ? pack( { type: type, payload: state, mutation: mutationType } ) : pack( { type: type, mutation: mutationType } ) ) );
 		}
 	};
 	getters = assign( getters, getters$1 );
@@ -231,7 +226,11 @@ var Store = function Store ( opt ) {
 			writable: false
 		},
 		commit: {
-			value: function ( type, payload ) { return commit.call( store, _state, type, payload ); },
+			value: function ( type, payload, provide ) {
+				if ( provide === void 0 ) provide = true;
+
+				return commit.call( store, _state, type, payload, provide );
+	},
 			configurable: false,
 			writable: false
 		},
@@ -239,10 +238,6 @@ var Store = function Store ( opt ) {
 			value: function ( type, payload ) { return getState.call( store, _state, type, payload ); },
 			configurable: false,
 			writable: false
-		},
-		appliedMutation: {
-			value: '',
-			writable: true
 		}
 	} );
 };
@@ -251,12 +246,11 @@ Store.prototype.getState = function getState ( state, type, payload ) {
 		if ( type === void 0 ) type = 'default';
 
 	var get = this.getters[ type ]( state.get(), payload, this.getters );
-	postMessage( pack( this.type, get, 'getState', type ) );
+	postMessage( pack( { type: this.type, payload: get, getter: type } ) );
 };
 
-Store.prototype.commit = function commit ( state, type, payload ) {
-	this.appliedMutation = type;
-	state.set( this.mutations[ type ]( state.get(), payload ) );
+Store.prototype.commit = function commit ( state, type, payload, provide ) {
+	state.set( this.mutations[ type ]( state.get(), payload ), type, provide );
 };
 
 Store.prototype.dispatch = function dispatch ( type, payload ) {
@@ -294,7 +288,7 @@ var worker = {
 					break
 			}
 		};
-		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } ) );
+		postMessage( pack( { type: INIT, payload: { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } } ) );
 	},
 	registerStore: function (config) {
 		var store = new Store( config );
@@ -353,8 +347,8 @@ var _getState = function ( storeType, getter, options, worker ) {
 	if ( getter === void 0 ) getter = 'default';
 
 	return new Promise( function ( resolve, reject ) {
-		var subscriber = function ( state, applied, got ) {
-			if ( applied !== 'getState' || got !== getter ) {
+		var subscriber = function ( state, m, got ) {
+			if ( got !== getter ) {
 				return
 			}
 			unsubscribe$1( storeType, subscriber );
@@ -395,8 +389,8 @@ subscribe( INIT, function (data) {
 			};
 			return store
 		} );
-		trigger( pack( CREATE_CLIENT_STORE, stores ) );
-		trigger( pack( CREATE_CLIENT_MANAGER, data.managers ) );
+		trigger( pack( { type: CREATE_CLIENT_STORE, payload: stores } ) );
+		trigger( pack( { type: CREATE_CLIENT_MANAGER, payload: data.managers } ) );
 	} catch ( err ) {
 		console.error( 'Error in creating client store or client manager', err );
 	}

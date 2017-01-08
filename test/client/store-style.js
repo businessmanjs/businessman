@@ -68,6 +68,15 @@ describe( 'Businessman Store Style Specs', () => {
 		} )
 	} )
 
+	it( 'If the third argument of commit is false it will not provide state', done => {
+		stores.counter.dispatch( 'silentSet', 1 )
+		stores.counter.subscribe( ( state, applied ) => {
+			expect( state ).to.be( null )
+			expect( applied ).to.be( 'set' )
+			done()
+		} )
+	} )
+
 	it( 'Unsubscribe', done => {
 		let i = 0
 		let counterSubscriber = () => {

@@ -19,9 +19,9 @@ class Store {
 
 		let _state = {
 			get: () => state,
-			set: newState => {
+			set: ( newState, mutationType, provide ) => {
 				state = newState
-				postMessage( pack( type, state, store.appliedMutation ) )
+				postMessage( ( provide ? pack( { type: type, payload: state, mutation: mutationType } ) : pack( { type: type, mutation: mutationType } ) ) )
 			}
 		}
 		getters = assign( getters, builtInGetters )
@@ -56,7 +56,7 @@ class Store {
 				writable: false
 			},
 			commit: {
-				value: ( type, payload ) => commit.call( store, _state, type, payload ),
+				value: ( type, payload, provide = true ) => commit.call( store, _state, type, payload, provide ),
 				configurable: false,
 				writable: false
 			},
@@ -64,22 +64,17 @@ class Store {
 				value: ( type, payload ) => getState.call( store, _state, type, payload ),
 				configurable: false,
 				writable: false
-			},
-			appliedMutation: {
-				value: '',
-				writable: true
 			}
 		} )
 	}
 
 	getState ( state, type = 'default', payload ) {
 		const get = this.getters[ type ]( state.get(), payload, this.getters )
-		postMessage( pack( this.type, get, 'getState', type ) )
+		postMessage( pack( { type: this.type, payload: get, getter: type } ) )
 	}
 
-	commit ( state, type, payload ) {
-		this.appliedMutation = type
-		state.set( this.mutations[ type ]( state.get(), payload ) )
+	commit ( state, type, payload, provide ) {
+		state.set( this.mutations[ type ]( state.get(), payload ), type, provide )
 	}
 
 	dispatch ( type, payload ) {

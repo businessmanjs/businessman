@@ -29,7 +29,7 @@ const worker = {
 					break
 			}
 		}
-		postMessage( pack( INIT, { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } ) )
+		postMessage( pack( { type: INIT, payload: { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } } ) )
 	},
 	registerStore: config => {
 		const store = new Store( config )
