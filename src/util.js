@@ -1,22 +1,37 @@
 import observable from 'riot-observable'
 
-const o = new function () {
+const CLIENT = new function () {
 	observable( this )
 }()
-
-export const trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.mutation, data.getter )
+const GETTER = new function () {
+	observable( this )
+}()
+const observer = obs => {
+	let target
+	switch ( obs ) {
+		case 'getter':
+			target = GETTER
+			break
+		default:
+			target = CLIENT
+			break
+	}
+	return target
 }
 
-export const on = function ( type, cb ) {
-	o.on( type, cb )
+export const trigger = function ( data, obs ) {
+	observer( obs ).trigger( data.type, data.payload, data.mutation, data.getter )
 }
 
-export const off = function ( type, cb ) {
+export const on = function ( type, cb, obs ) {
+	observer( obs ).on( type, cb )
+}
+
+export const off = function ( type, cb, obs ) {
 	if ( cb ) {
-		o.off( type, cb )
+		observer( obs ).off( type, cb )
 	} else {
-		o.off( type )
+		observer( obs ).off( type )
 	}
 }
 

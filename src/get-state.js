@@ -1,5 +1,6 @@
-import subscribe from './subscribe'
-import unsubscribe from './unsubscribe'
+import { on, off } from './util'
+
+const observer = 'getter'
 
 export default ( storeType, getter = 'default', options, worker ) => {
 	return new Promise( ( resolve, reject ) => {
@@ -7,16 +8,16 @@ export default ( storeType, getter = 'default', options, worker ) => {
 			if ( got !== getter ) {
 				return
 			}
-			unsubscribe( storeType, subscriber )
+			off( storeType, subscriber, observer )
 			resolve( state )
 		}
 
-		subscribe( storeType, subscriber )
+		on( storeType, subscriber, observer )
 
 		try {
 			worker.postMessage( [ 'getState', storeType, getter, options ] )
 		} catch ( err ) {
-			unsubscribe( storeType, subscriber )
+			off( storeType, subscriber, observer )
 			reject( err )
 		}
 	} )

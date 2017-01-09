@@ -126,23 +126,38 @@ var observable = function(el) {
 
 };
 
-var o = new function () {
+var CLIENT = new function () {
 	observable( this );
 }();
-
-var trigger = function ( data ) {
-	o.trigger( data.type, data.payload, data.mutation, data.getter );
+var GETTER = new function () {
+	observable( this );
+}();
+var observer = function (obs) {
+	var target;
+	switch ( obs ) {
+		case 'getter':
+			target = GETTER;
+			break
+		default:
+			target = CLIENT;
+			break
+	}
+	return target
 };
 
-var on = function ( type, cb ) {
-	o.on( type, cb );
+var trigger = function ( data, obs ) {
+	observer( obs ).trigger( data.type, data.payload, data.mutation, data.getter );
 };
 
-var off = function ( type, cb ) {
+var on = function ( type, cb, obs ) {
+	observer( obs ).on( type, cb );
+};
+
+var off = function ( type, cb, obs ) {
 	if ( cb ) {
-		o.off( type, cb );
+		observer( obs ).off( type, cb );
 	} else {
-		o.off( type );
+		observer( obs ).off( type );
 	}
 };
 
@@ -323,7 +338,7 @@ var worker$1 = Object.freeze( worker );
 var _install = function ( path, worker ) {
 	try {
 		worker = new Worker( path );
-		worker.onmessage = function (message) { return trigger( message.data ); };
+		worker.onmessage = function (m) { return trigger( m.data, ( m.data.getter ? 'getter' : 'client' ) ); };
 		return worker
 	} catch ( err ) {
 		console.error( 'Error in install', err );
@@ -338,13 +353,15 @@ var _operate = function ( managerType, payload, worker ) {
 	worker.postMessage( [ 'operate', managerType, payload ] );
 };
 
-var subscribe$1 = function ( type, cb ) {
+var _subscribe = function ( type, cb ) {
 	on( type, cb );
 };
 
-var unsubscribe$1 = function ( type, cb ) {
+var _unsubscribe = function ( type, cb ) {
 	off( type, cb );
 };
+
+var observer$1 = 'getter';
 
 var _getState = function ( storeType, getter, options, worker ) {
 	if ( getter === void 0 ) getter = 'default';
@@ -354,16 +371,16 @@ var _getState = function ( storeType, getter, options, worker ) {
 			if ( got !== getter ) {
 				return
 			}
-			unsubscribe$1( storeType, subscriber );
+			off( storeType, subscriber, observer$1 );
 			resolve( state );
 		};
 
-		subscribe$1( storeType, subscriber );
+		on( storeType, subscriber, observer$1 );
 
 		try {
 			worker.postMessage( [ 'getState', storeType, getter, options ] );
 		} catch ( err ) {
-			unsubscribe$1( storeType, subscriber );
+			off( storeType, subscriber, observer$1 );
 			reject( err );
 		}
 	} )
@@ -376,8 +393,8 @@ var install = function (path) {
 };
 var dispatch$1 = function ( storeType, actionType, payload ) { return _dispatch( storeType, actionType, payload, businessmanWoker ); };
 var operate = function ( managerType, payload ) { return _operate( managerType, payload, businessmanWoker ); };
-var subscribe = function ( type, cb ) { return subscribe$1( type, cb ); };
-var unsubscribe = function ( type, cb ) { return unsubscribe$1( type, cb ); };
+var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
+var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
 
 subscribe( INIT, function (data) {
