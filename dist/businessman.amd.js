@@ -249,6 +249,7 @@ Store.prototype.getState = function getState ( state, type, payload ) {
 
 	var get = this.getters[ type ]( state.get(), payload, this.getters );
 	postMessage( pack( { type: this.type, payload: get, getter: type } ) );
+	return get
 };
 
 Store.prototype.commit = function commit ( state, type, payload, provide ) {
