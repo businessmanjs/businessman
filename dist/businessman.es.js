@@ -1,4 +1,4 @@
-var observable = function(el) {
+var observable$1 = function(el) {
 
   /**
    * Extend the original object or create a new empty one
@@ -125,10 +125,10 @@ var observable = function(el) {
 };
 
 var CLIENT = new function () {
-	observable( this );
+	observable$1( this );
 }();
 var GETTER = new function () {
-	observable( this );
+	observable$1( this );
 }();
 var observer = function (obs) {
 	var target;

@@ -1,4 +1,4 @@
-import observable from 'riot-observable'
+import observable from './observer'
 
 const CLIENT = new function () {
 	observable( this )
