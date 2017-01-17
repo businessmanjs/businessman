@@ -1,9 +1,13 @@
 import { install, subscribe } from '../../src/businessman'
-import { time, timeEnd } from '../time'
+import { time, timeEnd, timeAverage, reset } from '../time'
 
 describe( 'Businessman Store Style Specs', () => {
 	var stores
 	let initialize = false
+
+	before( () => {
+		reset()
+	} )
 
 	beforeEach( done => {
 		let i = 0
@@ -40,6 +44,10 @@ describe( 'Businessman Store Style Specs', () => {
 			stores.counter.unsubscribe()
 			stores.message.unsubscribe()
 		}
+	} )
+
+	after( () => {
+		console.log( 'Average', timeAverage() )
 	} )
 
 	it( 'Install Worker', done => {
