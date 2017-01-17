@@ -1,4 +1,5 @@
 import { install, subscribe } from '../../src/businessman'
+import { time, timeEnd } from '../time'
 
 describe( 'Businessman Store Style Specs', () => {
 	var stores
@@ -7,28 +8,37 @@ describe( 'Businessman Store Style Specs', () => {
 	beforeEach( done => {
 		let i = 0
 		const counterSubscriber = state => {
+			console.log( 'counter', timeEnd( 'counter' ) )
 			i++
+			stores.counter.unsubscribe()
 			if ( state === 0 && i === 2 ) {
-				stores.counter.unsubscribe()
 				done()
 			}
 		}
 		const messageSubscriber = state => {
+			console.log( 'message', timeEnd( 'message' ) )
 			i++
+			stores.message.unsubscribe()
 			if ( state === '' && i === 2 ) {
-				stores.message.unsubscribe()
 				done()
 			}
 		}
 		if ( initialize ) {
-			stores.counter.unsubscribe()
-			stores.message.unsubscribe()
-			stores.counter.dispatch( 'set', 0 )
-			stores.message.dispatch( 'set', '' )
 			stores.counter.subscribe( counterSubscriber )
+			time( 'counter' )
+			stores.counter.dispatch( 'set', 0 )
 			stores.message.subscribe( messageSubscriber )
+			time( 'message' )
+			stores.message.dispatch( 'set', '' )
 		} else {
 			done()
+		}
+	} )
+
+	afterEach( () => {
+		if ( initialize ) {
+			stores.counter.unsubscribe()
+			stores.message.unsubscribe()
 		}
 	} )
 

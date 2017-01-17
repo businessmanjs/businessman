@@ -76,7 +76,9 @@
           "it",
           "expect",
           "before",
-          "beforeEach"
+          "beforeEach",
+          "after",
+          "afterEach"
         ]
       }
     ],
