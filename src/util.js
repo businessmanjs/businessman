@@ -1,11 +1,7 @@
-import observable from './observer'
+import Observable from './observer'
 
-const CLIENT = new function () {
-	observable( this )
-}()
-const GETTER = new function () {
-	observable( this )
-}()
+const CLIENT = new Observable()
+const GETTER = new Observable()
 const observer = obs => {
 	let target
 	switch ( obs ) {
