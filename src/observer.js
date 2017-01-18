@@ -1,39 +1,35 @@
-class Observable {
-	constructor () {
-		let callbacks = {}
+let callbacks = {}
 
-		Object.defineProperties( this, {
-			on: {
-				value: ( type, cb ) => {
-					if ( type in callbacks ) {
-						callbacks[ type ].push( cb )
-					} else {
-						callbacks[ type ] = [ cb ]
-					}
-				}
-			},
-			off: {
-				value: ( type, cb ) => {
-					if ( cb ) {
-						const i = callbacks[ type ].indexOf( cb )
-						if ( i ) {
-							callbacks[ type ].splice( i, 1 )
-						}
-					} else {
-						callbacks[ type ] = []
-					}
-				}
-			},
-			trigger: {
-				value: ( type, ...args ) => {
-					const cbs = callbacks[ type ]
-					for ( let i = 0; i < cbs.length; i++ ) {
-						cbs[ i ].apply( null, args )
-					}
-				}
+const observable = {
+	register: name => {
+		callbacks[ name ] = {}
+	},
+	on: ( name, type, cb ) => {
+		let list = callbacks[ name ]
+		if ( type in list ) {
+			list[ type ].push( cb )
+		} else {
+			list[ type ] = [ cb ]
+		}
+	},
+	off: ( name, type, cb ) => {
+		let list = callbacks[ name ]
+		if ( cb ) {
+			const i = list[ type ].indexOf( cb )
+			if ( i ) {
+				list[ type ].splice( i, 1 )
 			}
-		} )
+		} else {
+			list[ type ] = []
+		}
+	},
+	trigger: ( name, type, ...args ) => {
+		let list = callbacks[ name ]
+		const cbs = list[ type ]
+		for ( let i = 0; i < cbs.length; i++ ) {
+			cbs[ i ].apply( null, args )
+		}
 	}
 }
 
-export default Observable
+export default observable

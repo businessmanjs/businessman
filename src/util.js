@@ -1,33 +1,24 @@
-import Observable from './observer'
+import observer from './observer'
 
-const CLIENT = new Observable()
-const GETTER = new Observable()
-const observer = obs => {
-	let target
-	switch ( obs ) {
-		case 'getter':
-			target = GETTER
-			break
-		default:
-			target = CLIENT
-			break
-	}
-	return target
+const GETTER = 'getter'
+const CLIENT = 'client'
+
+observer.register( GETTER )
+observer.register( CLIENT )
+
+export const trigger = function ( data, obs = CLIENT ) {
+	observer.trigger( obs, data.type, data.payload, data.mutation, data.getter )
 }
 
-export const trigger = function ( data, obs ) {
-	observer( obs ).trigger( data.type, data.payload, data.mutation, data.getter )
+export const on = function ( type, cb, obs = CLIENT ) {
+	observer.on( obs, type, cb )
 }
 
-export const on = function ( type, cb, obs ) {
-	observer( obs ).on( type, cb )
-}
-
-export const off = function ( type, cb, obs ) {
+export const off = function ( type, cb, obs = CLIENT ) {
 	if ( cb ) {
-		observer( obs ).off( type, cb )
+		observer.off( obs, type, cb )
 	} else {
-		observer( obs ).off( type )
+		observer.off( obs, type )
 	}
 }
 

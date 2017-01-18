@@ -1,70 +1,63 @@
-var Observable = function Observable () {
-	var callbacks = {};
+var callbacks = {};
 
-	Object.defineProperties( this, {
-		on: {
-			value: function ( type, cb ) {
-				if ( type in callbacks ) {
-					callbacks[ type ].push( cb );
-				} else {
-					callbacks[ type ] = [ cb ];
-				}
-			}
-		},
-		off: {
-			value: function ( type, cb ) {
-				if ( cb ) {
-					var i = callbacks[ type ].indexOf( cb );
-					if ( i ) {
-						callbacks[ type ].splice( i, 1 );
-					}
-				} else {
-					callbacks[ type ] = [];
-				}
-			}
-		},
-		trigger: {
-			value: function ( type ) {
-				var args = [], len = arguments.length - 1;
-				while ( len-- > 0 ) args[ len ] = arguments[ len + 1 ];
-
-				var cbs = callbacks[ type ];
-				for ( var i = 0; i < cbs.length; i++ ) {
-					cbs[ i ].apply( null, args );
-				}
-			}
+var observable = {
+	register: function (name) {
+		callbacks[ name ] = {};
+	},
+	on: function ( name, type, cb ) {
+		var list = callbacks[ name ];
+		if ( type in list ) {
+			list[ type ].push( cb );
+		} else {
+			list[ type ] = [ cb ];
 		}
-	} );
+	},
+	off: function ( name, type, cb ) {
+		if ( cb ) {
+			var i = callbacks[ name ][ type ].indexOf( cb );
+			if ( i ) {
+				callbacks[ name ][ type ].splice( i, 1 );
+			}
+		} else {
+			callbacks[ name ][ type ] = [];
+		}
+	},
+	trigger: function ( name, type ) {
+		var args = [], len = arguments.length - 2;
+		while ( len-- > 0 ) args[ len ] = arguments[ len + 2 ];
+
+		var cbs = callbacks[ name ][ type ];
+		for ( var i = 0; i < cbs.length; i++ ) {
+			cbs[ i ].apply( null, args );
+		}
+	}
 };
 
-var CLIENT = new Observable();
-var GETTER = new Observable();
-var observer = function (obs) {
-	var target;
-	switch ( obs ) {
-		case 'getter':
-			target = GETTER;
-			break
-		default:
-			target = CLIENT;
-			break
-	}
-	return target
-};
+var GETTER = 'getter';
+var CLIENT = 'client';
+
+observable.register( GETTER );
+observable.register( CLIENT );
 
 var trigger = function ( data, obs ) {
-	observer( obs ).trigger( data.type, data.payload, data.mutation, data.getter );
+	if ( obs === void 0 ) obs = CLIENT;
+
+	observable.trigger( obs, data.type, data.payload, data.mutation, data.getter );
 };
 
 var on = function ( type, cb, obs ) {
-	observer( obs ).on( type, cb );
+	if ( obs === void 0 ) obs = CLIENT;
+
+	observable.on( obs, type, cb );
 };
 
 var off = function ( type, cb, obs ) {
+	if ( obs === void 0 ) obs = CLIENT;
+
 	if ( cb ) {
-		observer( obs ).off( type, cb );
+		observable.off( obs, type, cb );
 	} else {
-		observer( obs ).off( type );
+		observable.off( obs, type );
 	}
 };
 
