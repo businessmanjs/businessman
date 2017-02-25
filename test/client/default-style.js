@@ -1,35 +1,53 @@
 import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../../src/businessman'
+import { time, timeEnd, timeAverage, reset } from '../time'
 
 describe( 'Businessman Default Style Specs', () => {
 	var stores
 	let initialize = false
 
+	before( () => {
+		reset()
+	} )
+
 	beforeEach( done => {
 		let i = 0
 		const counterSubscriber = state => {
+			console.log( 'counter', timeEnd( 'counter' ) )
 			i++
+			unsubscribe( 'counter' )
 			if ( state === 0 && i === 2 ) {
-				unsubscribe( 'counter' )
 				done()
 			}
 		}
 		const messageSubscriber = state => {
+			console.log( 'message', timeEnd( 'message' ) )
 			i++
+			unsubscribe( 'message' )
 			if ( state === '' && i === 2 ) {
-				unsubscribe( 'message' )
 				done()
 			}
 		}
 		if ( initialize ) {
-			unsubscribe( 'counter' )
-			unsubscribe( 'message' )
-			dispatch( 'counter', 'set', 0 )
-			dispatch( 'message', 'set', '' )
 			subscribe( 'counter', counterSubscriber )
+			time( 'counter' )
+			dispatch( 'counter', 'set', 0 )
 			subscribe( 'message', messageSubscriber )
+			time( 'message' )
+			dispatch( 'message', 'set', '' )
 		} else {
 			done()
 		}
+	} )
+
+	afterEach( () => {
+		if ( initialize ) {
+			unsubscribe( 'counter' )
+			unsubscribe( 'message' )
+		}
+	} )
+
+	after( () => {
+		console.log( 'Average', timeAverage() )
 	} )
 
 	it( 'Install Worker', done => {

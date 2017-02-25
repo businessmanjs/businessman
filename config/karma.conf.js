@@ -19,6 +19,10 @@ module.exports = function ( config ) {
 		proxies: {
 			'/dist/': '/base/dist/'
 		},
+		browserConsoleLogOptions: {
+			terminal: true,
+			level: ''
+		},
 		browsers: [ 'PhantomJS' ],
 		reporters: [ 'mocha' ],
 		singleRun: true
