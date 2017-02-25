@@ -13,22 +13,26 @@ var observable = {
 		}
 	},
 	off: function ( name, type, cb ) {
+		var list = callbacks[ name ];
 		if ( cb ) {
-			var i = callbacks[ name ][ type ].indexOf( cb );
+			var i = list[ type ].indexOf( cb );
 			if ( i ) {
-				callbacks[ name ][ type ].splice( i, 1 );
+				list[ type ].splice( i, 1 );
 			}
 		} else {
-			callbacks[ name ][ type ] = [];
+			list[ type ] = [];
 		}
 	},
 	trigger: function ( name, type ) {
 		var args = [], len = arguments.length - 2;
 		while ( len-- > 0 ) args[ len ] = arguments[ len + 2 ];
 
-		var cbs = callbacks[ name ][ type ];
-		for ( var i = 0; i < cbs.length; i++ ) {
-			cbs[ i ].apply( null, args );
+		var list = callbacks[ name ];
+		var cbs = list[ type ];
+		if ( cbs ) {
+			for ( var i = 0; i < cbs.length; i++ ) {
+				cbs[ i ].apply( cbs, args );
+			}
 		}
 	}
 };

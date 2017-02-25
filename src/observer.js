@@ -5,7 +5,7 @@ const observable = {
 		callbacks[ name ] = {}
 	},
 	on: ( name, type, cb ) => {
-		let list = callbacks[ name ]
+		const list = callbacks[ name ]
 		if ( type in list ) {
 			list[ type ].push( cb )
 		} else {
@@ -13,7 +13,7 @@ const observable = {
 		}
 	},
 	off: ( name, type, cb ) => {
-		let list = callbacks[ name ]
+		const list = callbacks[ name ]
 		if ( cb ) {
 			const i = list[ type ].indexOf( cb )
 			if ( i ) {
@@ -24,10 +24,12 @@ const observable = {
 		}
 	},
 	trigger: ( name, type, ...args ) => {
-		let list = callbacks[ name ]
+		const list = callbacks[ name ]
 		const cbs = list[ type ]
-		for ( let i = 0; i < cbs.length; i++ ) {
-			cbs[ i ].apply( null, args )
+		if ( cbs ) {
+			for ( let i = 0; i < cbs.length; i++ ) {
+				cbs[ i ]( ...args )
+			}
 		}
 	}
 }
