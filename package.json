@@ -21,9 +21,6 @@
     "url": "https://gitlab.com/aggre/businessman/issues"
   },
   "homepage": "https://gitlab.com/aggre/businessman#README",
-  "dependencies": {
-    "riot-observable": "^3.0.0"
-  },
   "devDependencies": {
     "expect.js": "^0.3.1",
     "karma": "^1.3.0",
