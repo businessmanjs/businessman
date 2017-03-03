@@ -1,3 +1,7 @@
+# v1.4.10
+
+- Change: README.md
+
 # v1.4.9
 
 - Remove: Dependence on riot-observable
