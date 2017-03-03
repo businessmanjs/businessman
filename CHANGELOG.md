@@ -1,3 +1,7 @@
+# v1.4.9
+
+- Remove: Dependence on riot-observable
+
 # v1.4.8
 
 - Improve: Approximately 30% improvement in observable performance [Issue #35](https://gitlab.com/aggre/businessman/issues/35)
