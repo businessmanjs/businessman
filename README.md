@@ -1,4 +1,4 @@
-Multi-thread State Management by the Worker API.
+Multi-thread State Management by Worker API.
 
 <img src="https://aggre.gitlab.io/businessman/assets/businessman.png" alt="Businessman" width="750">
 
@@ -14,14 +14,14 @@ import { worker } from 'businessman'
 worker.registerStore( {
     type: 'counter',
     state: 0,
-    mutations: {
-        increment: ( state, num ) => {
-            return state += num
-        }
-    },
     actions: {
         increment: ( commit, num = 1 ) => {
             commit( 'increment', num )
+        }
+    },
+    mutations: {
+        increment: ( state, num ) => {
+            return state += num
         }
     },
 	getters: {
@@ -48,23 +48,6 @@ Save the state of the store. Any type can be used for the state.
 state: 0
 ```
 
-### Mutations
-
-Change the state. After that, the new state is automatically notified to the main thread.
-
-It will receive the current state and payload and return the new value.
-
-The state is changed and the main thread is notified.
-
-```
-increment: ( state, num ) => {
-    return state += num
-}
-```
-
-ATTENTION
-- Do not place asynchronous processing on mutations.
-
 ### Actions
 
 Execute the mutation. Asynchronous processing can be placed on the action.
@@ -86,6 +69,23 @@ increment: ( commit, num = 1 ) => {
     commit( 'increment', num, false )
 }
 ```
+
+### Mutations
+
+Change the state. After that, the new state is automatically notified to the main thread.
+
+It will receive the current state and payload and return the new value.
+
+The state is changed and the main thread is notified.
+
+```
+increment: ( state, num ) => {
+    return state += num
+}
+```
+
+ATTENTION
+- Do not place asynchronous processing on mutations.
 
 ### Getters
 
@@ -113,7 +113,7 @@ Mutation and action belong to one store.
 
 If you want to dispatch to multiple stores at the same time, you can use the manager.
 
-The manager has registered it using `worker.registerManager()`.
+It can be registered using `worker.registerManager()`.
 
 ```
 import { worker } from 'businessman'
@@ -151,15 +151,20 @@ import { worker } from 'businessman'
 worker.registerStore( {
     type: 'counter',
     state: 0,
+    actions: {
+        increment: ( commit, num = 1 ) => {
+            commit( 'increment', num )
+        }
+    },
     mutations: {
         increment: ( state, num ) => {
             return state += num
         }
     },
-    actions: {
-        increment: ( commit, num = 1 ) => {
-            commit( 'increment', num )
-        }
+	getters: {
+        absolute: ( state ) => {
+			return Math.abs( state )
+		}
     }
 } )
 
