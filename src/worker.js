@@ -1,6 +1,6 @@
 import Store from './store/store'
 import { pack } from './util'
-import { INIT } from './behavior-types'
+import { INIT } from './built-in-types'
 
 let stores = {}
 let managers = {}

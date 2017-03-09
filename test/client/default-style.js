@@ -1,4 +1,4 @@
-import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../../src/businessman'
+import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../../index'
 import { time, timeEnd, timeAverage, reset } from '../time'
 
 describe( 'Businessman Default Style Specs', () => {
