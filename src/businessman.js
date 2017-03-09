@@ -6,7 +6,7 @@ import _subscribe from './subscribe'
 import _unsubscribe from './unsubscribe'
 import _getState from './get-state'
 import { trigger, pack } from './util'
-import { INIT, CREATE_CLIENT_STORE, CREATE_CLIENT_MANAGER } from './behavior-types'
+import { INIT, CREATE_CLIENT_STORE, CREATE_CLIENT_MANAGER } from './built-in-types'
 
 let businessmanWoker = null
 
