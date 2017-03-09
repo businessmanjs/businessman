@@ -6,7 +6,7 @@ const commonjs = require( 'rollup-plugin-commonjs' )
 const name = 'businessman'
 
 rollup.rollup( {
-	entry: `src/${name}.js`,
+	entry: 'index.js',
 	plugins: [
 		npm( { jsnext: true } ),
 		buble(),

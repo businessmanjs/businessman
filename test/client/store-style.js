@@ -1,4 +1,4 @@
-import { install, subscribe } from '../../src/businessman'
+import { install, subscribe } from '../../index'
 import { time, timeEnd, timeAverage, reset } from '../time'
 
 describe( 'Businessman Store Style Specs', () => {

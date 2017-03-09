@@ -301,7 +301,7 @@ var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
 var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
 
-subscribe( INIT, function (data) {
+var onInit$1 = function () { return subscribe( INIT, function (data) {
 	var stores = {};
 	try {
 		data.stores.map( function (store) {
@@ -318,6 +318,8 @@ subscribe( INIT, function (data) {
 	} catch ( err ) {
 		console.error( 'Error in creating client store or client manager', err );
 	}
-} );
+} ); };
+
+onInit$1();
 
 export { install, dispatch$1 as dispatch, operate, subscribe, unsubscribe, getState$1 as getState, worker$1 as worker };
