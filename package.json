@@ -1,6 +1,6 @@
 {
   "name": "businessman",
-  "version": "1.4.11",
+  "version": "1.4.12",
   "description": "Multi-thread State Management by the Worker API",
   "main": "dist/businessman.js",
   "jsnext:main": "index.js",
