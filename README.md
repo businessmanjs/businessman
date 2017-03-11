@@ -267,8 +267,6 @@ counter.getState( 'absolute' )
 
 # How to contribute
 
-See Board on GitLab.
-
 You can feel free to join anytime!
 
-[GitLab Project](https://gitlab.com/aggre/businessman/boards)
+[GitHub Project](https://github.com/businessmanjs/businessman/issues)
