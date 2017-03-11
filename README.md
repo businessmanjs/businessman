@@ -1,6 +1,16 @@
 Multi-thread State Management by Worker API.
 
-<img src="https://aggre.gitlab.io/businessman/assets/businessman.png" alt="Businessman" width="750">
+<a href="https://travis-ci.org/businessmanjs/businessman">
+<img src="https://api.travis-ci.org/businessmanjs/businessman.svg?branch=master" alt="build status">
+</a>
+<a href="https://www.npmjs.com/package/businessman">
+<img src="https://img.shields.io/npm/v/businessman.svg" alt="npm version">
+</a>
+<a href="https://github.com/businessmanjs/businessman/blob/master/LICENSE.md">
+<img src="https://img.shields.io/npm/l/businessman.svg" alt="license">
+</a>
+
+<img src="https://raw.githubusercontent.com/businessmanjs/businessman/master/public/assets/businessman.png" alt="Businessman" width="750">
 
 # API
 
