@@ -1,3 +1,7 @@
+# v1.4.13
+
+- Fix: package.json
+
 # v1.4.12
 
 - Change Git repository from GitLab to GitHub
