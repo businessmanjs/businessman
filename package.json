@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@gitlab.com/aggre/businessman.git"
+    "url": "git+https://github.com/businessmanjs/businessman.git"
   },
   "author": "aggre",
   "license": "MIT",
