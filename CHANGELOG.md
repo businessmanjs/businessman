@@ -1,3 +1,7 @@
+# v1.4.12
+
+- Change Git repository from GitLab to GitHub
+
 # v1.4.11
 
 - Move: built-in subscribe / dispatch files
