@@ -1,8 +1,9 @@
 import observer from './observer'
-import { GETTER, CLIENT } from './observer-types'
+import { GETTER, CLIENT, ALLSTATE } from './observer-types'
 
 observer.register( GETTER )
 observer.register( CLIENT )
+observer.register( ALLSTATE )
 
 export const trigger = function ( data, obs = CLIENT ) {
 	observer.trigger( obs, data.type, data.payload, data.mutation, data.getter )

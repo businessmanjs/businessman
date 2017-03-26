@@ -41,9 +41,11 @@ var observable = {
 
 var GETTER = 'GETTER';
 var CLIENT = 'CLIENT';
+var ALLSTATE = 'ALLSTATE';
 
 observable.register( GETTER );
 observable.register( CLIENT );
+observable.register( ALLSTATE );
 
 var trigger = function ( data, obs ) {
 	if ( obs === void 0 ) obs = CLIENT;
