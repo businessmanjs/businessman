@@ -250,15 +250,29 @@ counter.unsubscribe( listener )
 In Businessman `getState()` is also executed asynchronously.
 
 ```
-counter.getState()
+import { getState } from 'businessman'
+
+getState( 'counter' )
+.then( ( state ) => {
+    console.log( state )
+} )
+
+// You can also specify Getter.
+getState( 'counter', 'absolute' )
 .then( ( state ) => {
     console.log( state )
 } )
 ```
 
-You can also specify Getter.
+For store style ...
 
 ```
+counter.getState()
+.then( ( state ) => {
+    console.log( state )
+} )
+
+// You can also specify Getter.
 counter.getState( 'absolute' )
 .then( ( state ) => {
     console.log( state )
