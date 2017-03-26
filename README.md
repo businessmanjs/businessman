@@ -18,7 +18,7 @@ Multi-thread State Management by Worker API.
 
 Overview
 
-```
+```js
 import { worker } from 'businessman'
 
 worker.registerStore( {
@@ -30,14 +30,10 @@ worker.registerStore( {
         }
     },
     mutations: {
-        increment: ( state, num ) => {
-            return state += num
-        }
+        increment: ( state, num ) => state += num
     },
 	getters: {
-        absolute: ( state ) => {
-			return Math.abs( state )
-		}
+        absolute: state => Math.abs( state )
     }
 } )
 ```
@@ -46,7 +42,7 @@ worker.registerStore( {
 
 Type is a string that is the identity of the store. This needs to be unique.
 
-```
+```js
 type: 'counter'
 ```
 
@@ -54,7 +50,7 @@ type: 'counter'
 
 Save the state of the store. Any type can be used for the state.
 
-```
+```js
 state: 0
 ```
 
@@ -64,7 +60,7 @@ Execute the mutation. Asynchronous processing can be placed on the action.
 
 Pass the mutation name to the function of the first argument of the action. The payload is provided from the second argument.
 
-```
+```js
 increment: ( commit, num = 1 ) => {
     commit( 'increment', num )
 }
@@ -74,7 +70,7 @@ If the third argument of commit is false, it does not provide state.
 
 In this case, the state passed to the subscriber is `null`.
 
-```
+```js
 increment: ( commit, num = 1 ) => {
     commit( 'increment', num, false )
 }
@@ -88,10 +84,8 @@ It will receive the current state and payload and return the new value.
 
 The state is changed and the main thread is notified.
 
-```
-increment: ( state, num ) => {
-    return state += num
-}
+```js
+increment: ( state, num ) => state += num
 ```
 
 ATTENTION
@@ -101,15 +95,13 @@ ATTENTION
 
 Getters gets state by calculation.
 
-```
-absolute: ( state ) => {
-	return Math.abs( state )
-}
+```js
+absolute: state => Math.abs( state )
 ```
 
 An option is provided for the second argument, and another Getter is provided for the third argument.
 
-```
+```js
 absolute: ( state, options, getters ) => {
 	// state: Current state
 	// options: Some option
@@ -125,7 +117,7 @@ If you want to dispatch to multiple stores at the same time, you can use the man
 
 It can be registered using `worker.registerManager()`.
 
-```
+```js
 import { worker } from 'businessman'
 
 worker.registerManager( {
@@ -139,7 +131,7 @@ worker.registerManager( {
 
 Call `operate()` with manager type and payload specified.
 
-```
+```js
 import { operate } from 'businessman'
 
 operate( 'countUpMessage', 1 )
@@ -149,13 +141,13 @@ operate( 'countUpMessage', 1 )
 
 Call `worker.start()` to start a worker.
 
-```
+```js
 worker.start()
 ```
 
 When added to the source of the Create Store as shown earlier, it becomes as follows.
 
-```
+```js
 import { worker } from 'businessman'
 
 worker.registerStore( {
@@ -167,14 +159,10 @@ worker.registerStore( {
         }
     },
     mutations: {
-        increment: ( state, num ) => {
-            return state += num
-        }
+        increment: ( state, num ) => state += num
     },
 	getters: {
-        absolute: ( state ) => {
-			return Math.abs( state )
-		}
+        absolute: state => Math.abs( state )
     }
 } )
 
@@ -185,7 +173,7 @@ worker.start()
 
 Install workers and start state management.
 
-```
+```js
 import { install } from 'businessman'
 
 install( '/path/to/worker.js' )
@@ -196,32 +184,32 @@ ATTENTION
 
 ## Dispatch and Subscribe
 
-```
+```js
 import { dispatch, subscribe } from 'businessman'
 
 dispatch( 'counter', 'increment', 1 )
 
-subscribe( 'counter', ( state ) => {
+subscribe( 'counter', state => {
     console.log( state ) // 1
 } )
 ```
 
 Dispatch / Subscribe is also available in Store style.
 
-```
+```js
 counter.dispatch( 'increment', 1 )
 
-counter.subscribe( ( state ) => {
+counter.subscribe( state => {
     console.log( state )
 } )
 ```
 
 The store style is available after the store in the worker has been created for the client. It can be obtained by subscribing `CREATE_CLIENT_STORE`.
 
-```
+```js
 let counter
 
-subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
+subscribe( 'CREATE_CLIENT_STORE', stores => {
     console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...}, unsubscribe: function () {...}, getState: function () {...} } }
     counter = stores.counter
 } )
@@ -231,7 +219,7 @@ subscribe( 'CREATE_CLIENT_STORE', ( stores ) => {
 
 You can stop / delete subscribe.
 
-```
+```js
 import { unsubscribe } from 'businessman'
 
 unsubscribe( 'counter' ) // Delete all listeners subscribing to the store
@@ -240,7 +228,7 @@ unsubscribe( 'counter', listener ) // Delete one listener
 
 For store style ...
 
-```
+```js
 counter.unsubscribe()
 counter.unsubscribe( listener )
 ```
@@ -249,18 +237,47 @@ counter.unsubscribe( listener )
 
 In Businessman `getState()` is also executed asynchronously.
 
-```
-counter.getState()
-.then( ( state ) => {
+```js
+import { getState } from 'businessman'
+
+getState( 'counter' )
+.then( state => {
+    console.log( state )
+} )
+
+// You can also specify Getter.
+getState( 'counter', 'absolute' )
+.then( state => {
     console.log( state )
 } )
 ```
 
-You can also specify Getter.
+For store style ...
 
-```
+```js
+counter.getState()
+.then( state => {
+    console.log( state )
+} )
+
+// You can also specify Getter.
 counter.getState( 'absolute' )
-.then( ( state ) => {
+.then( state => {
+    console.log( state )
+} )
+```
+
+## getAllState
+
+getState() can only get the state of one store.
+
+To get the state of all stores, use `getAllState()`.
+
+```js
+import { getAllState } from 'businessman'
+
+getAllState()
+.then( state => {
     console.log( state )
 } )
 ```
