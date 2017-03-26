@@ -1,3 +1,5 @@
+import { OPERATE } from './types/api'
+
 export default ( managerType, payload, worker ) => {
-	worker.postMessage( [ 'operate', managerType, payload ] )
+	worker.postMessage( [ OPERATE, managerType, payload ] )
 }

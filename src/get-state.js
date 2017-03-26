@@ -1,5 +1,6 @@
 import { on, off } from './util'
 import { GETTER } from './types/observer'
+import { GET_STATE } from './types/api'
 
 export default ( storeType, getter = 'default', options, worker ) => {
 	return new Promise( ( resolve, reject ) => {
@@ -14,7 +15,7 @@ export default ( storeType, getter = 'default', options, worker ) => {
 		on( storeType, subscriber, GETTER )
 
 		try {
-			worker.postMessage( [ 'getState', storeType, getter, options ] )
+			worker.postMessage( [ GET_STATE, storeType, getter, options ] )
 		} catch ( err ) {
 			off( storeType, subscriber, GETTER )
 			reject( err )

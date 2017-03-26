@@ -1,21 +1,20 @@
 import { on, off } from './util'
 import { ALLSTATE } from './types/observer'
-
-const id = 'getAllState'
+import { GET_ALL_STATE } from './types/api'
 
 export default worker => {
 	return new Promise( ( resolve, reject ) => {
 		const subscriber = state => {
-			off( id, subscriber, ALLSTATE )
+			off( GET_ALL_STATE, subscriber, ALLSTATE )
 			resolve( state )
 		}
 
-		on( id, subscriber, ALLSTATE )
+		on( GET_ALL_STATE, subscriber, ALLSTATE )
 
 		try {
-			worker.postMessage( [ 'getAllState' ] )
+			worker.postMessage( [ GET_ALL_STATE ] )
 		} catch ( err ) {
-			off( id, subscriber, ALLSTATE )
+			off( GET_ALL_STATE, subscriber, ALLSTATE )
 			reject( err )
 		}
 	} )

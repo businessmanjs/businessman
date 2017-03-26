@@ -184,13 +184,18 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 	this.actions[ type ]( this.commit, payload );
 };
 
+var DISPATCH = 'dispatch';
+var OPERATE = 'operate';
+var GET_STATE = 'getState';
+var GET_ALL_STATE = 'getAllState';
+
 var getAllState$1 = function (stores) {
 	var state = {};
 	var key = Object.keys( stores );
 	for ( var i = 0; i < key.length; i++ ) {
 		state[ key[ i ] ] = stores[ key[ i ] ].getState();
 	}
-	postMessage( pack( { type: 'getAllState', payload: state, allState: true } ) );
+	postMessage( pack( { type: GET_ALL_STATE, payload: state, allState: true } ) );
 	return state
 };
 
@@ -212,16 +217,16 @@ var worker = {
 		onmessage = function (e) {
 			var data = e.data;
 			switch ( data[ 0 ] ) {
-				case 'dispatch':
+				case DISPATCH:
 					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] );
 					break
-				case 'operate':
+				case OPERATE:
 					managers[ data[ 1 ] ]( stores, data[ 2 ] );
 					break
-				case 'getState':
+				case GET_STATE:
 					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] );
 					break
-				case 'getAllState':
+				case GET_ALL_STATE:
 					getAllState$1( stores );
 					break
 				default:
@@ -268,11 +273,11 @@ var _install = function ( path, worker ) {
 };
 
 var _dispatch = function ( storeType, actionType, payload, worker ) {
-	worker.postMessage( [ 'dispatch', storeType, actionType, payload ] );
+	worker.postMessage( [ DISPATCH, storeType, actionType, payload ] );
 };
 
 var _operate = function ( managerType, payload, worker ) {
-	worker.postMessage( [ 'operate', managerType, payload ] );
+	worker.postMessage( [ OPERATE, managerType, payload ] );
 };
 
 var _subscribe = function ( type, cb ) {
@@ -298,7 +303,7 @@ var _getState = function ( storeType, getter, options, worker ) {
 		on( storeType, subscriber, GETTER );
 
 		try {
-			worker.postMessage( [ 'getState', storeType, getter, options ] );
+			worker.postMessage( [ GET_STATE, storeType, getter, options ] );
 		} catch ( err ) {
 			off( storeType, subscriber, GETTER );
 			reject( err );
@@ -306,21 +311,19 @@ var _getState = function ( storeType, getter, options, worker ) {
 	} )
 };
 
-var id = 'getAllState';
-
 var _getAllState = function (worker) {
 	return new Promise( function ( resolve, reject ) {
 		var subscriber = function (state) {
-			off( id, subscriber, ALLSTATE );
+			off( GET_ALL_STATE, subscriber, ALLSTATE );
 			resolve( state );
 		};
 
-		on( id, subscriber, ALLSTATE );
+		on( GET_ALL_STATE, subscriber, ALLSTATE );
 
 		try {
-			worker.postMessage( [ 'getAllState' ] );
+			worker.postMessage( [ GET_ALL_STATE ] );
 		} catch ( err ) {
-			off( id, subscriber, ALLSTATE );
+			off( GET_ALL_STATE, subscriber, ALLSTATE );
 			reject( err );
 		}
 	} )
