@@ -6,6 +6,6 @@ export default stores => {
 	for ( let i = 0; i < key.length; i++ ) {
 		state[ key[ i ] ] = stores[ key[ i ] ].getState()
 	}
-	postMessage( pack( { payload: state, allState: true } ) )
+	postMessage( pack( { type: 'getAllState', payload: state, allState: true } ) )
 	return state
 }

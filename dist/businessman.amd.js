@@ -74,7 +74,8 @@ var pack = function ( options ) {
 	var payload = options.payload; if ( payload === void 0 ) payload = null;
 	var mutation = options.mutation; if ( mutation === void 0 ) mutation = null;
 	var getter = options.getter; if ( getter === void 0 ) getter = null;
-	return { type: type, payload: payload, mutation: mutation, getter: getter }
+	var allState = options.allState; if ( allState === void 0 ) allState = null;
+	return { type: type, payload: payload, mutation: mutation, getter: getter, allState: allState }
 };
 
 var assign = function ( target, sources ) {
@@ -183,6 +184,16 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 	this.actions[ type ]( this.commit, payload );
 };
 
+var getAllState$1 = function (stores) {
+	var state = {};
+	var key = Object.keys( stores );
+	for ( var i = 0; i < key.length; i++ ) {
+		state[ key[ i ] ] = stores[ key[ i ] ].getState();
+	}
+	postMessage( pack( { type: 'getAllState', payload: state, allState: true } ) );
+	return state
+};
+
 var INIT = 'INIT';
 var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
 var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
@@ -209,6 +220,9 @@ var worker = {
 					break
 				case 'getState':
 					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] );
+					break
+				case 'getAllState':
+					getAllState$1( stores );
 					break
 				default:
 					break
@@ -246,7 +260,7 @@ var worker$1 = Object.freeze( worker );
 var _install = function ( path, worker ) {
 	try {
 		worker = new Worker( path );
-		worker.onmessage = function (m) { return trigger( m.data, ( m.data.getter ? GETTER : CLIENT ) ); };
+		worker.onmessage = function (m) { return trigger( m.data, ( m.data.allState ? ALLSTATE : m.data.getter ? GETTER : CLIENT ) ); };
 		return worker
 	} catch ( err ) {
 		console.error( 'Error in install', err );
@@ -292,6 +306,26 @@ var _getState = function ( storeType, getter, options, worker ) {
 	} )
 };
 
+var id = 'getAllState';
+
+var _getAllState = function (worker) {
+	return new Promise( function ( resolve, reject ) {
+		var subscriber = function (state) {
+			off( id, subscriber, ALLSTATE );
+			resolve( state );
+		};
+
+		on( id, subscriber, ALLSTATE );
+
+		try {
+			worker.postMessage( [ 'getAllState' ] );
+		} catch ( err ) {
+			off( id, subscriber, ALLSTATE );
+			reject( err );
+		}
+	} )
+};
+
 var businessmanWoker = null;
 
 var install = function (path) {
@@ -302,6 +336,7 @@ var operate = function ( managerType, payload ) { return _operate( managerType, 
 var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
 var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
+var getAllState = function () { return _getAllState( businessmanWoker ); };
 
 var onInit$1 = function () { return subscribe( INIT, function (data) {
 	var stores = {};
@@ -330,6 +365,7 @@ exports.operate = operate;
 exports.subscribe = subscribe;
 exports.unsubscribe = unsubscribe;
 exports.getState = getState$1;
+exports.getAllState = getAllState;
 exports.worker = worker$1;
 
 Object.defineProperty(exports, '__esModule', { value: true });
