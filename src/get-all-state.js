@@ -1,5 +1,5 @@
 import { on, off } from './util'
-import { ALLSTATE } from './observer-types'
+import { ALLSTATE } from './types/observer'
 
 const id = 'getAllState'
 

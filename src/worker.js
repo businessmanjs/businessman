@@ -1,7 +1,7 @@
 import Store from './store/store'
 import getAllState from './worker-get-all-state'
 import { pack } from './util'
-import { INIT } from './built-in-types'
+import { INIT } from './types/built-in'
 
 let stores = {}
 let managers = {}

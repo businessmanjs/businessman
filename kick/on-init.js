@@ -1,5 +1,5 @@
 import { dispatch, subscribe, unsubscribe, getState } from '../src/businessman'
-import { INIT, CREATE_CLIENT_STORE, CREATE_CLIENT_MANAGER } from '../src/built-in-types'
+import { INIT, CREATE_CLIENT_STORE, CREATE_CLIENT_MANAGER } from '../src/types/built-in'
 import { trigger, pack } from '../src/util'
 
 export default () => subscribe( INIT, data => {

@@ -1,5 +1,5 @@
 import { trigger } from './util'
-import { GETTER, CLIENT, ALLSTATE } from './observer-types'
+import { GETTER, CLIENT, ALLSTATE } from './types/observer'
 
 export default ( path, worker ) => {
 	try {

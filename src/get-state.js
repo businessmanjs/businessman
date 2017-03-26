@@ -1,5 +1,5 @@
 import { on, off } from './util'
-import { GETTER } from './observer-types'
+import { GETTER } from './types/observer'
 
 export default ( storeType, getter = 'default', options, worker ) => {
 	return new Promise( ( resolve, reject ) => {

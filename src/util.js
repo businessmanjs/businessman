@@ -1,5 +1,5 @@
 import observer from './observer'
-import { GETTER, CLIENT, ALLSTATE } from './observer-types'
+import { GETTER, CLIENT, ALLSTATE } from './types/observer'
 
 observer.register( GETTER )
 observer.register( CLIENT )
