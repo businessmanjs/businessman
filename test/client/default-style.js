@@ -1,4 +1,4 @@
-import { install, dispatch, operate, subscribe, unsubscribe, getState } from '../../index'
+import { install, dispatch, operate, subscribe, unsubscribe, getState, getAllState } from '../../index'
 import { time, timeEnd, timeAverage, reset } from '../time'
 
 describe( 'Businessman Default Style Specs', () => {
@@ -135,6 +135,29 @@ describe( 'Businessman Default Style Specs', () => {
 		subscribe( 'message', state => {
 			expect( state ).to.be( '1 has been added to the counter' )
 			done()
+		} )
+	} )
+
+	it( 'Get state of all stores with getAllState', done => {
+		const states = {}
+		const test = () => {
+			getAllState().then( state => {
+				expect( state.counter ).to.equal( states.counter )
+				expect( state.message ).to.equal( states.message )
+				done()
+			} )
+		}
+		getState( 'counter' ).then( state => {
+			states.counter = state
+			if ( 'message' in states ) {
+				test()
+			}
+		} )
+		getState( 'message' ).then( state => {
+			states.message = state
+			if ( 'counter' in states ) {
+				test()
+			}
 		} )
 	} )
 } )

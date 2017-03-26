@@ -37,11 +37,13 @@ var observable = {
 	}
 };
 
-var GETTER = 'getter';
-var CLIENT = 'client';
+var GETTER = 'GETTER';
+var CLIENT = 'CLIENT';
+var ALLSTATE = 'ALLSTATE';
 
 observable.register( GETTER );
 observable.register( CLIENT );
+observable.register( ALLSTATE );
 
 var trigger = function ( data, obs ) {
 	if ( obs === void 0 ) obs = CLIENT;
@@ -70,7 +72,8 @@ var pack = function ( options ) {
 	var payload = options.payload; if ( payload === void 0 ) payload = null;
 	var mutation = options.mutation; if ( mutation === void 0 ) mutation = null;
 	var getter = options.getter; if ( getter === void 0 ) getter = null;
-	return { type: type, payload: payload, mutation: mutation, getter: getter }
+	var allState = options.allState; if ( allState === void 0 ) allState = null;
+	return { type: type, payload: payload, mutation: mutation, getter: getter, allState: allState }
 };
 
 var assign = function ( target, sources ) {
@@ -179,6 +182,21 @@ Store.prototype.dispatch = function dispatch ( type, payload ) {
 	this.actions[ type ]( this.commit, payload );
 };
 
+var DISPATCH = 'dispatch';
+var OPERATE = 'operate';
+var GET_STATE = 'getState';
+var GET_ALL_STATE = 'getAllState';
+
+var getAllState$1 = function (stores) {
+	var state = {};
+	var key = Object.keys( stores );
+	for ( var i = 0; i < key.length; i++ ) {
+		state[ key[ i ] ] = stores[ key[ i ] ].getState();
+	}
+	postMessage( pack( { type: GET_ALL_STATE, payload: state, allState: true } ) );
+	return state
+};
+
 var INIT = 'INIT';
 var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
 var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
@@ -197,14 +215,17 @@ var worker = {
 		onmessage = function (e) {
 			var data = e.data;
 			switch ( data[ 0 ] ) {
-				case 'dispatch':
+				case DISPATCH:
 					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] );
 					break
-				case 'operate':
+				case OPERATE:
 					managers[ data[ 1 ] ]( stores, data[ 2 ] );
 					break
-				case 'getState':
+				case GET_STATE:
 					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] );
+					break
+				case GET_ALL_STATE:
+					getAllState$1( stores );
 					break
 				default:
 					break
@@ -242,7 +263,7 @@ var worker$1 = Object.freeze( worker );
 var _install = function ( path, worker ) {
 	try {
 		worker = new Worker( path );
-		worker.onmessage = function (m) { return trigger( m.data, ( m.data.getter ? 'getter' : 'client' ) ); };
+		worker.onmessage = function (m) { return trigger( m.data, ( m.data.allState ? ALLSTATE : m.data.getter ? GETTER : CLIENT ) ); };
 		return worker
 	} catch ( err ) {
 		console.error( 'Error in install', err );
@@ -250,11 +271,11 @@ var _install = function ( path, worker ) {
 };
 
 var _dispatch = function ( storeType, actionType, payload, worker ) {
-	worker.postMessage( [ 'dispatch', storeType, actionType, payload ] );
+	worker.postMessage( [ DISPATCH, storeType, actionType, payload ] );
 };
 
 var _operate = function ( managerType, payload, worker ) {
-	worker.postMessage( [ 'operate', managerType, payload ] );
+	worker.postMessage( [ OPERATE, managerType, payload ] );
 };
 
 var _subscribe = function ( type, cb ) {
@@ -265,8 +286,6 @@ var _unsubscribe = function ( type, cb ) {
 	off( type, cb );
 };
 
-var observer$1 = 'getter';
-
 var _getState = function ( storeType, getter, options, worker ) {
 	if ( getter === void 0 ) getter = 'default';
 
@@ -275,16 +294,34 @@ var _getState = function ( storeType, getter, options, worker ) {
 			if ( got !== getter ) {
 				return
 			}
-			off( storeType, subscriber, observer$1 );
+			off( storeType, subscriber, GETTER );
 			resolve( state );
 		};
 
-		on( storeType, subscriber, observer$1 );
+		on( storeType, subscriber, GETTER );
 
 		try {
-			worker.postMessage( [ 'getState', storeType, getter, options ] );
+			worker.postMessage( [ GET_STATE, storeType, getter, options ] );
 		} catch ( err ) {
-			off( storeType, subscriber, observer$1 );
+			off( storeType, subscriber, GETTER );
+			reject( err );
+		}
+	} )
+};
+
+var _getAllState = function (worker) {
+	return new Promise( function ( resolve, reject ) {
+		var subscriber = function (state) {
+			off( GET_ALL_STATE, subscriber, ALLSTATE );
+			resolve( state );
+		};
+
+		on( GET_ALL_STATE, subscriber, ALLSTATE );
+
+		try {
+			worker.postMessage( [ GET_ALL_STATE ] );
+		} catch ( err ) {
+			off( GET_ALL_STATE, subscriber, ALLSTATE );
 			reject( err );
 		}
 	} )
@@ -300,6 +337,7 @@ var operate = function ( managerType, payload ) { return _operate( managerType, 
 var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
 var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
+var getAllState = function () { return _getAllState( businessmanWoker ); };
 
 var onInit$1 = function () { return subscribe( INIT, function (data) {
 	var stores = {};
@@ -322,4 +360,4 @@ var onInit$1 = function () { return subscribe( INIT, function (data) {
 
 onInit$1();
 
-export { install, dispatch$1 as dispatch, operate, subscribe, unsubscribe, getState$1 as getState, worker$1 as worker };
+export { install, dispatch$1 as dispatch, operate, subscribe, unsubscribe, getState$1 as getState, getAllState, worker$1 as worker };

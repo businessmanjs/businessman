@@ -1,10 +1,9 @@
 import observer from './observer'
-
-const GETTER = 'getter'
-const CLIENT = 'client'
+import { GETTER, CLIENT, ALLSTATE } from './types/observer'
 
 observer.register( GETTER )
 observer.register( CLIENT )
+observer.register( ALLSTATE )
 
 export const trigger = function ( data, obs = CLIENT ) {
 	observer.trigger( obs, data.type, data.payload, data.mutation, data.getter )
@@ -27,9 +26,10 @@ export const pack = function ( options ) {
 		type = null,
 		payload = null,
 		mutation = null,
-		getter = null
+		getter = null,
+		allState = null
 	} = options
-	return { type: type, payload: payload, mutation: mutation, getter: getter }
+	return { type: type, payload: payload, mutation: mutation, getter: getter, allState: allState }
 }
 
 export const assign = function ( target, sources ) {
