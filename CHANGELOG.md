@@ -1,3 +1,7 @@
+# v1.5.0
+
+- Add: Get state of all stores, `getAllState()` [Issue #4](https://github.com/businessmanjs/businessman/issues/4)
+
 # v1.4.13
 
 - Fix: package.json
@@ -20,7 +24,7 @@
 
 # v1.4.8
 
-- Improve: Approximately 30% improvement in observable performance [Issue #35](https://gitlab.com/aggre/businessman/issues/35)
+- Improve: Approximately 30% improvement in observable performance
 
 # v1.4.7
 
