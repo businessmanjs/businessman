@@ -1,4 +1,5 @@
 import Store from './store/store'
+import getAllState from './worker-get-all-state'
 import { pack } from './util'
 import { INIT } from './built-in-types'
 
@@ -24,6 +25,9 @@ const worker = {
 					break
 				case 'getState':
 					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] )
+					break
+				case 'getAllState':
+					getAllState( stores )
 					break
 				default:
 					break

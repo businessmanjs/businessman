@@ -5,6 +5,7 @@ import _operate from './operate'
 import _subscribe from './subscribe'
 import _unsubscribe from './unsubscribe'
 import _getState from './get-state'
+import _getAllState from './get-all-state'
 
 let businessmanWoker = null
 
@@ -16,6 +17,7 @@ const operate = ( managerType, payload ) => _operate( managerType, payload, busi
 const subscribe = ( type, cb ) => _subscribe( type, cb )
 const unsubscribe = ( type, cb ) => _unsubscribe( type, cb )
 const getState = ( storeType, getter, options ) => _getState( storeType, getter, options, businessmanWoker )
+const getAllState = () => _getAllState( businessmanWoker )
 
 export {
     install,
@@ -24,5 +26,6 @@ export {
     subscribe,
     unsubscribe,
     getState,
+	getAllState,
     worker
 }
