@@ -32,7 +32,7 @@ worker.registerStore( {
     mutations: {
         increment: ( state, num ) => state += num
     },
-	getters: {
+    getters: {
         absolute: state => Math.abs( state )
     }
 } )
@@ -103,9 +103,9 @@ An option is provided for the second argument, and another Getter is provided fo
 
 ```js
 absolute: ( state, options, getters ) => {
-	// state: Current state
-	// options: Some option
-	// getters: All Getters in this store
+    // state: Current state
+    // options: Some option
+    // getters: All Getters in this store
 }
 ```
 
@@ -161,7 +161,7 @@ worker.registerStore( {
     mutations: {
         increment: ( state, num ) => state += num
     },
-	getters: {
+    getters: {
         absolute: state => Math.abs( state )
     }
 } )
