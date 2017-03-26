@@ -265,6 +265,21 @@ counter.getState( 'absolute' )
 } )
 ```
 
+## getAllState
+
+getState() can only get the state of one store.
+
+To get the state of all stores, use `getAllState()`.
+
+```
+import { getAllState } from 'businessman'
+
+getAllState()
+.then( ( state ) => {
+    console.log( state )
+} )
+```
+
 # How to contribute
 
 You can feel free to join anytime!
