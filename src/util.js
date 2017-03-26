@@ -1,7 +1,5 @@
 import observer from './observer'
-
-const GETTER = 'getter'
-const CLIENT = 'client'
+import { GETTER, CLIENT } from './observer-types'
 
 observer.register( GETTER )
 observer.register( CLIENT )

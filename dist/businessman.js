@@ -43,8 +43,8 @@ var observable = {
 	}
 };
 
-var GETTER = 'getter';
-var CLIENT = 'client';
+var GETTER = 'GETTER';
+var CLIENT = 'CLIENT';
 
 observable.register( GETTER );
 observable.register( CLIENT );
@@ -248,7 +248,7 @@ var worker$1 = Object.freeze( worker );
 var _install = function ( path, worker ) {
 	try {
 		worker = new Worker( path );
-		worker.onmessage = function (m) { return trigger( m.data, ( m.data.getter ? 'getter' : 'client' ) ); };
+		worker.onmessage = function (m) { return trigger( m.data, ( m.data.getter ? GETTER : CLIENT ) ); };
 		return worker
 	} catch ( err ) {
 		console.error( 'Error in install', err );
@@ -271,8 +271,6 @@ var _unsubscribe = function ( type, cb ) {
 	off( type, cb );
 };
 
-var observer$1 = 'getter';
-
 var _getState = function ( storeType, getter, options, worker ) {
 	if ( getter === void 0 ) getter = 'default';
 
@@ -281,16 +279,16 @@ var _getState = function ( storeType, getter, options, worker ) {
 			if ( got !== getter ) {
 				return
 			}
-			off( storeType, subscriber, observer$1 );
+			off( storeType, subscriber, GETTER );
 			resolve( state );
 		};
 
-		on( storeType, subscriber, observer$1 );
+		on( storeType, subscriber, GETTER );
 
 		try {
 			worker.postMessage( [ 'getState', storeType, getter, options ] );
 		} catch ( err ) {
-			off( storeType, subscriber, observer$1 );
+			off( storeType, subscriber, GETTER );
 			reject( err );
 		}
 	} )
