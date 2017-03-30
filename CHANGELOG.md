@@ -1,3 +1,7 @@
+# v1.5.1
+
+- Change: Motivation and store concept added to README.md
+
 # v1.5.0
 
 - Add: Get state of all stores, `getAllState()` [Issue #4](https://github.com/businessmanjs/businessman/issues/4)
