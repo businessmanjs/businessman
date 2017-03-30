@@ -12,11 +12,21 @@ Multi-thread State Management by Worker API.
 
 <img src="https://raw.githubusercontent.com/businessmanjs/businessman/master/public/assets/businessman.png" alt="Businessman" width="750">
 
+# Motivation
+
+If application state management is performed by an application thread, the responsiveness of the application may be impaired. There is also a risk that the application itself will manipulate the state.
+
+The application keep responsiveness by delegating state management to the Worker. It also eliminates the risk of direct manipulation of the state.
+
 # API
 
 ## Create Store
 
-Overview
+In Businessman, only the states manipulated by dispatching are sent to the main thread. Because the data size between threads affects performance.
+
+In short, Businessman only has one small state in one store.
+
+The store is defined as follows.
 
 ```js
 import { worker } from 'businessman'
