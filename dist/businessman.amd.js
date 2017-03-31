@@ -93,7 +93,7 @@ var assign = function ( target, sources ) {
 	}
 };
 
-var getters$1 = {
+var getters = {
 	default: function (state) { return state; }
 };
 
@@ -105,7 +105,7 @@ var Store = function Store ( opt ) {
 	var state = opt.state;
 	var mutations$$1 = opt.mutations; if ( mutations$$1 === void 0 ) mutations$$1 = {};
 	var actions$$1 = opt.actions; if ( actions$$1 === void 0 ) actions$$1 = {};
-	var getters = opt.getters; if ( getters === void 0 ) getters = {};
+	var getters$$1 = opt.getters; if ( getters$$1 === void 0 ) getters$$1 = {};
 	var type = opt.type;
 	var store = this;
 	var ref = this;
@@ -120,7 +120,7 @@ var Store = function Store ( opt ) {
 			postMessage( ( provide ? pack( { type: type, payload: state, mutation: mutationType } ) : pack( { type: type, mutation: mutationType } ) ) );
 		}
 	};
-	getters = assign( getters, getters$1 );
+	getters$$1 = assign( getters$$1, getters );
 	mutations$$1 = assign( mutations$$1, mutations );
 	actions$$1 = assign( actions$$1, actions );
 
@@ -132,7 +132,7 @@ var Store = function Store ( opt ) {
 			configurable: false
 		},
 		getters: {
-			value: getters,
+			value: getters$$1,
 			configurable: false,
 			writable: false
 		},
@@ -200,17 +200,9 @@ var getAllState$1 = function (stores) {
 };
 
 var INIT = 'INIT';
-var CREATE_CLIENT_STORE = 'CREATE_CLIENT_STORE';
-var CREATE_CLIENT_MANAGER = 'CREATE_CLIENT_MANAGER';
 
 var stores = {};
 var managers = {};
-var getters = {};
-var forClient = {
-	stores: [],
-	managers: [],
-	getters: []
-};
 
 var worker = {
 	start: function () {
@@ -233,19 +225,13 @@ var worker = {
 					break
 			}
 		};
-		postMessage( pack( { type: INIT, payload: { stores: forClient.stores, managers: forClient.managers, getters: forClient.getters } } ) );
+		postMessage( pack( { type: INIT, payload: { stores: Object.keys( stores ), managers: Object.keys( managers ) } } ) );
 	},
 	registerStore: function (config) {
 		var store = new Store( config );
 		var type = store.type;
-		var actions = store.actions;
 		if ( !( type in stores ) ) {
 			stores[ type ] = store;
-			forClient.stores.push( {
-				type: type,
-				actions: Object.keys( actions ),
-				getters: Object.keys( getters )
-			} );
 		}
 	},
 	registerManager: function (config) {
@@ -253,9 +239,6 @@ var worker = {
 		var handler = config.handler;
 		if ( !( type in managers ) ) {
 			managers[ type ] = handler;
-			forClient.managers.push( {
-				type: type
-			} );
 		}
 	}
 };
@@ -340,27 +323,6 @@ var subscribe = function ( type, cb ) { return _subscribe( type, cb ); };
 var unsubscribe = function ( type, cb ) { return _unsubscribe( type, cb ); };
 var getState$1 = function ( storeType, getter, options ) { return _getState( storeType, getter, options, businessmanWoker ); };
 var getAllState = function () { return _getAllState( businessmanWoker ); };
-
-var onInit$1 = function () { return subscribe( INIT, function (data) {
-	var stores = {};
-	try {
-		data.stores.map( function (store) {
-			stores[ store.type ] = {
-				dispatch: function ( actionType, payload ) { return dispatch$1( store.type, actionType, payload ); },
-				subscribe: function (cb) { return subscribe( store.type, cb ); },
-				unsubscribe: function (cb) { return unsubscribe( store.type, cb ); },
-				getState: function ( getter, options ) { return getState$1( store.type, getter, options ); }
-			};
-			return store
-		} );
-		trigger( pack( { type: CREATE_CLIENT_STORE, payload: stores } ) );
-		trigger( pack( { type: CREATE_CLIENT_MANAGER, payload: data.managers } ) );
-	} catch ( err ) {
-		console.error( 'Error in creating client store or client manager', err );
-	}
-} ); };
-
-onInit$1();
 
 exports.install = install;
 exports.dispatch = dispatch$1;
