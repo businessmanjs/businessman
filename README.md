@@ -296,4 +296,6 @@ getAllState()
 
 You can feel free to join anytime!
 
-[GitHub Project](https://github.com/businessmanjs/businessman/issues)
+[GitHub Issues](https://github.com/businessmanjs/businessman/issues)
+
+[GitHub Contributing Guide](https://github.com/businessmanjs/businessman/blob/master/.github/CONTRIBUTING.md)
