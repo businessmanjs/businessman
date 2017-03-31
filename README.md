@@ -192,6 +192,20 @@ install( '/path/to/worker.js' )
 ATTENTION
 - Workers need to be converted for browsers with arbitrary compiler.
 
+### On initialization
+
+By subscribing `'INIT'` you can receive notification of installation.
+
+Receives an array of store and manager types as payload.
+
+```js
+import { subscribe } from 'businessman'
+
+subscribe( 'INIT', data => {
+    console.log( data ) // { stores: [...], managers: [...] }
+} )
+```
+
 ## Dispatch and Subscribe
 
 ```js
@@ -204,27 +218,6 @@ subscribe( 'counter', state => {
 } )
 ```
 
-Dispatch / Subscribe is also available in Store style.
-
-```js
-counter.dispatch( 'increment', 1 )
-
-counter.subscribe( state => {
-    console.log( state )
-} )
-```
-
-The store style is available after the store in the worker has been created for the client. It can be obtained by subscribing `CREATE_CLIENT_STORE`.
-
-```js
-let counter
-
-subscribe( 'CREATE_CLIENT_STORE', stores => {
-    console.log( stores ) // { counter: { dispatch: function () {...}, subscribe: function () {...}, unsubscribe: function () {...}, getState: function () {...} } }
-    counter = stores.counter
-} )
-```
-
 ## Unsubscribe
 
 You can stop / delete subscribe.
@@ -234,13 +227,6 @@ import { unsubscribe } from 'businessman'
 
 unsubscribe( 'counter' ) // Delete all listeners subscribing to the store
 unsubscribe( 'counter', listener ) // Delete one listener
-```
-
-For store style ...
-
-```js
-counter.unsubscribe()
-counter.unsubscribe( listener )
 ```
 
 ## getState
@@ -257,21 +243,6 @@ getState( 'counter' )
 
 // You can also specify Getter.
 getState( 'counter', 'absolute' )
-.then( state => {
-    console.log( state )
-} )
-```
-
-For store style ...
-
-```js
-counter.getState()
-.then( state => {
-    console.log( state )
-} )
-
-// You can also specify Getter.
-counter.getState( 'absolute' )
 .then( state => {
     console.log( state )
 } )
