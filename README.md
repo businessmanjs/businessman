@@ -279,7 +279,7 @@ counter.getState( 'absolute' )
 
 ## getAllState
 
-getState() can only get the state of one store.
+`getState()` can only get the state of one store.
 
 To get the state of all stores, use `getAllState()`.
 
