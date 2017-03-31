@@ -18,7 +18,7 @@ First as follows:
 
 ```
 git clone git@github.com:YOUR/businessman.git && cd businessman
-yarn
+npm i
 npm run build
 ```
 
