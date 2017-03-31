@@ -1,3 +1,7 @@
+# v2.0.0
+
+- Remove: Store style API [Issue #8](https://github.com/businessmanjs/businessman/issues/8)
+
 # v1.5.1
 
 - Change: Motivation and store concept added to README.md
