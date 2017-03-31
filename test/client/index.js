@@ -1,8 +1,8 @@
 import { install, dispatch, operate, subscribe, unsubscribe, getState, getAllState } from '../../index'
 import { time, timeEnd, timeAverage, reset } from '../time'
 
-describe( 'Businessman Default Style Specs', () => {
-	var stores
+describe( 'Businessman Specs', () => {
+	let initDatas
 	let initialize = false
 
 	before( () => {
@@ -51,8 +51,8 @@ describe( 'Businessman Default Style Specs', () => {
 	} )
 
 	it( 'Install Worker', done => {
-		subscribe( 'CREATE_CLIENT_STORE', data => {
-			stores = data
+		subscribe( 'INIT', data => {
+			initDatas = data
 			initialize = true
 			expect( data ).to.be.ok()
 			done()
@@ -60,16 +60,13 @@ describe( 'Businessman Default Style Specs', () => {
 		install( '/dist/test-worker.js' )
 	} )
 
-	it( 'Store for clients includes dispatch() and subscribe()', () => {
-		expect( stores ).to.be.ok()
-		let storeKeys = Object.keys( stores )
-		for ( let i = 0; i < storeKeys.length; i++ ) {
-			let store = storeKeys[ i ]
-			expect( stores[ store ] ).to.have.property( 'dispatch' )
-			expect( stores[ store ] ).to.have.property( 'subscribe' )
-			expect( stores[ store ].dispatch ).to.be.an( 'function' )
-			expect( stores[ store ].subscribe ).to.be.an( 'function' )
-		}
+	it( 'INIT data has store and managers', () => {
+		expect( initDatas ).to.be.ok()
+		expect( initDatas.stores[ 0 ] ).to.be( 'counter' )
+		expect( initDatas.stores[ 1 ] ).to.be( 'message' )
+		expect( initDatas.stores[ 2 ] ).not.to.be.ok()
+		expect( initDatas.managers[ 0 ] ).to.be( 'countUpMessage' )
+		expect( initDatas.managers[ 1 ] ).not.to.be.ok()
 	} )
 
 	it( 'Dispatch and subscribe', done => {
