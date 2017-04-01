@@ -1,4 +1,5 @@
-Multi-thread State Management by Worker API.
+Powerful, Secure, Multi-threaded Flux Patterns.
+
 
 <a href="https://travis-ci.org/businessmanjs/businessman">
 <img src="https://api.travis-ci.org/businessmanjs/businessman.svg?branch=master" alt="build status">
