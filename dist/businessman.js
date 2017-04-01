@@ -176,7 +176,6 @@ Store.prototype.getState = function getState ( state, type, payload ) {
 		if ( type === void 0 ) type = 'default';
 
 	var get = this.getters[ type ]( state.get(), payload, this.getters );
-	postMessage( pack( { type: this.type, payload: get, getter: type } ) );
 	return get
 };
 
@@ -186,6 +185,14 @@ Store.prototype.commit = function commit ( state, type, payload, provide ) {
 
 Store.prototype.dispatch = function dispatch ( type, payload ) {
 	this.actions[ type ]( this.commit, payload );
+};
+
+var getState$2 = function ( stores, data ) {
+	var store = data[0];
+	var type = data[1];
+	var payload = data[2];
+	var get = stores[ store ].getState( type, payload );
+	postMessage( pack( { type: store, payload: get, getter: type } ) );
 };
 
 var DISPATCH = 'dispatch';
@@ -212,15 +219,17 @@ var worker = {
 	start: function () {
 		onmessage = function (e) {
 			var data = e.data;
-			switch ( data[ 0 ] ) {
+			var c = data[ 0 ];
+			data.shift();
+			switch ( c ) {
 				case DISPATCH:
-					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] );
+					stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] );
 					break
 				case OPERATE:
-					managers[ data[ 1 ] ]( stores, data[ 2 ] );
+					managers[ data[ 0 ] ]( stores, data[ 1 ] );
 					break
 				case GET_STATE:
-					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] );
+					getState$2( stores, data );
 					break
 				case GET_ALL_STATE:
 					getAllState$1( stores );
