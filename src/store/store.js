@@ -70,7 +70,6 @@ class Store {
 
 	getState ( state, type = 'default', payload ) {
 		const get = this.getters[ type ]( state.get(), payload, this.getters )
-		postMessage( pack( { type: this.type, payload: get, getter: type } ) )
 		return get
 	}
 

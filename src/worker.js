@@ -1,4 +1,5 @@
 import Store from './store/store'
+import getState from './worker-get-state'
 import getAllState from './worker-get-all-state'
 import { pack } from './util'
 import INIT from './types/built-in'
@@ -11,15 +12,17 @@ const worker = {
 	start: () => {
 		onmessage = e => {
 			const data = e.data
-			switch ( data[ 0 ] ) {
+			const c = data[ 0 ]
+			data.shift()
+			switch ( c ) {
 				case DISPATCH:
-					stores[ data[ 1 ] ].dispatch( data[ 2 ], data[ 3 ] )
+					stores[ data[ 0 ] ].dispatch( data[ 1 ], data[ 2 ] )
 					break
 				case OPERATE:
-					managers[ data[ 1 ] ]( stores, data[ 2 ] )
+					managers[ data[ 0 ] ]( stores, data[ 1 ] )
 					break
 				case GET_STATE:
-					stores[ data[ 1 ] ].getState( data[ 2 ], data[ 3 ] )
+					getState( stores, data )
 					break
 				case GET_ALL_STATE:
 					getAllState( stores )
