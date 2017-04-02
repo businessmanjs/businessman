@@ -120,6 +120,12 @@ absolute: ( state, options, getters ) => {
 }
 ```
 
+#### Default getters
+
+A default getter `default` that returns self-state is provided.
+
+You do not need to add getters if you just want to return your self-state.
+
 ## Create Manager
 
 Mutation and action belong to one store.
@@ -237,6 +243,7 @@ In Businessman `getState()` is also executed asynchronously.
 ```js
 import { getState } from 'businessman'
 
+// Get state with `default` getter
 getState( 'counter' )
 .then( state => {
     console.log( state )
