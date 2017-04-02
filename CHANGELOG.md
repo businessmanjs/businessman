@@ -1,3 +1,7 @@
+# v2.0.1
+
+- Fix: Resolved that useless postMessage was running when getAllState [Pull #10](https://github.com/businessmanjs/businessman/pull/10)
+
 # v2.0.0
 
 - Remove: Store style API [Issue #8](https://github.com/businessmanjs/businessman/issues/8)
