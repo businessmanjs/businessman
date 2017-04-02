@@ -1,6 +1,6 @@
 {
   "name": "businessman",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Powerful, Secure, Multi-threaded Flux Patterns.",
   "main": "dist/businessman.js",
   "jsnext:main": "index.js",
