@@ -1,5 +1,5 @@
-import { DISPATCH } from './types/api'
+import {DISPATCH} from './types/api'
 
-export default ( storeType, actionType, payload, worker ) => {
-	worker.postMessage( [ DISPATCH, storeType, actionType, payload ] )
+export default (storeType, actionType, payload, worker) => {
+	worker.postMessage([DISPATCH, storeType, actionType, payload])
 }
