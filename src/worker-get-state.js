@@ -1,11 +1,11 @@
-import { pack } from './util'
+import {pack} from './util'
 
-export default ( stores, data ) => {
+export default (stores, data) => {
 	const [
 		store,
 		type,
 		payload
 	] = data
-	const get = stores[ store ].getState( type, payload )
-	postMessage( pack( { type: store, payload: get, getter: type } ) )
+	const get = stores[store].getState(type, payload)
+	postMessage(pack({type: store, payload: get, getter: type}))
 }

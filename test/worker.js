@@ -1,50 +1,50 @@
-import { worker } from '../src/businessman'
+import {worker} from '../src/businessman'
 
-worker.registerStore( {
+worker.registerStore({
 	type: 'counter',
 	state: 0,
 	mutations: {
-		increment: ( state, num ) => {
+		increment: (state, num) => {
 			let n = state += num
 			return n
 		},
-		set: ( state, num ) => num
+		set: (state, num) => num
 	},
 	actions: {
-		increment: ( commit, num = 1 ) => {
-			commit( 'increment', num )
+		increment: (commit, num = 1) => {
+			commit('increment', num)
 		},
-		set: ( commit, num = 0 ) => {
-			commit( 'set', num )
+		set: (commit, num = 0) => {
+			commit('set', num)
 		},
-		silentSet: ( commit, num = 0 ) => {
-			commit( 'set', num, false )
+		silentSet: (commit, num = 0) => {
+			commit('set', num, false)
 		}
 	}
-} )
+})
 
-worker.registerStore( {
+worker.registerStore({
 	type: 'message',
 	state: '',
 	getters: {
 		wordCount: state => state.length
 	},
 	mutations: {
-		set: ( state, mes ) => mes
+		set: (state, mes) => mes
 	},
 	actions: {
-		set: ( commit, mes = '' ) => {
-			commit( 'set', mes )
+		set: (commit, mes = '') => {
+			commit('set', mes)
 		}
 	}
-} )
+})
 
-worker.registerManager( {
+worker.registerManager({
 	type: 'countUpMessage',
-	handler: ( stores, num = 1 ) => {
-		stores.counter.dispatch( 'increment', num )
-		stores.message.dispatch( 'set', `${num} has been added to the counter` )
+	handler: (stores, num = 1) => {
+		stores.counter.dispatch('increment', num)
+		stores.message.dispatch('set', `${num} has been added to the counter`)
 	}
-} )
+})
 
 worker.start()

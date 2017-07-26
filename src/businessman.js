@@ -10,14 +10,14 @@ import _getAllState from './get-all-state'
 let businessmanWoker = null
 
 const install = path => {
-	businessmanWoker = _install( path, businessmanWoker )
+	businessmanWoker = _install(path, businessmanWoker)
 }
-const dispatch = ( storeType, actionType, payload ) => _dispatch( storeType, actionType, payload, businessmanWoker )
-const operate = ( managerType, payload ) => _operate( managerType, payload, businessmanWoker )
-const subscribe = ( type, cb ) => _subscribe( type, cb )
-const unsubscribe = ( type, cb ) => _unsubscribe( type, cb )
-const getState = ( storeType, getter, options ) => _getState( storeType, getter, options, businessmanWoker )
-const getAllState = () => _getAllState( businessmanWoker )
+const dispatch = (storeType, actionType, payload) => _dispatch(storeType, actionType, payload, businessmanWoker)
+const operate = (managerType, payload) => _operate(managerType, payload, businessmanWoker)
+const subscribe = (type, cb) => _subscribe(type, cb)
+const unsubscribe = (type, cb) => _unsubscribe(type, cb)
+const getState = (storeType, getter, options) => _getState(storeType, getter, options, businessmanWoker)
+const getAllState = () => _getAllState(businessmanWoker)
 
 export {
     install,

@@ -1,5 +1,5 @@
-import { off } from './util'
+import {off} from './util'
 
-export default ( type, cb ) => {
-	off( type, cb )
+export default (type, cb) => {
+	off(type, cb)
 }
