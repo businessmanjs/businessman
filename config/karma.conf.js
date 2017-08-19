@@ -25,6 +25,7 @@ module.exports = function (config) {
 		},
 		browsers: ['PhantomJS'],
 		reporters: ['mocha'],
+		transports: ['polling'],
 		singleRun: true
 	})
 }
