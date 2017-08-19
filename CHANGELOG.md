@@ -1,3 +1,7 @@
+# v3.0.0-alpha.0
+
+- Changed method name for Worker
+
 # v2.0.1
 
 - Fix: Resolved that useless postMessage was running when getAllState [Pull #10](https://github.com/businessmanjs/businessman/pull/10)
