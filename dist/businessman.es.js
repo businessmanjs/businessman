@@ -234,14 +234,14 @@ var worker = {
 		};
 		postMessage(pack({type: INIT, payload: {stores: Object.keys(stores), managers: Object.keys(managers)}}));
 	},
-	registerStore: function (config) {
+	addStore: function (config) {
 		var store = new Store(config);
 		var type = store.type;
 		if (!(type in stores)) {
 			stores[type] = store;
 		}
 	},
-	registerManager: function (config) {
+	addManager: function (config) {
 		var type = config.type;
 		var handler = config.handler;
 		if (!(type in managers)) {
@@ -252,9 +252,9 @@ var worker = {
 
 var worker$1 = Object.freeze(worker);
 
-var _install = function (path, worker) {
+var _install = function (path) {
 	try {
-		worker = new Worker(path);
+		var worker = new Worker(path);
 		worker.onmessage = function (m) { return trigger(m.data, (m.data.allState ? ALLSTATE : m.data.getter ? GETTER : CLIENT)); };
 		return worker
 	} catch (err) {
@@ -322,7 +322,7 @@ var _getAllState = function (worker) {
 var businessmanWoker = null;
 
 var install = function (path) {
-	businessmanWoker = _install(path, businessmanWoker);
+	businessmanWoker = _install(path);
 };
 var dispatch$1 = function (storeType, actionType, payload) { return _dispatch(storeType, actionType, payload, businessmanWoker); };
 var operate = function (managerType, payload) { return _operate(managerType, payload, businessmanWoker); };

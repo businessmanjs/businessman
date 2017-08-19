@@ -32,20 +32,24 @@ The store is defined as follows.
 ```js
 import { worker } from 'businessman'
 
-worker.registerStore( {
-    type: 'counter',
-    state: 0,
-    actions: {
-        increment: ( commit, num = 1 ) => {
-            commit( 'increment', num )
-        }
-    },
-    mutations: {
-        increment: ( state, num ) => state += num
-    },
-    getters: {
-        absolute: state => Math.abs( state )
-    }
+worker.addStore( {
+	type: 'counter',
+	state: 0,
+	actions: {
+		increment( commit, num = 1 ) {
+			commit( 'increment', num )
+		}
+	},
+	mutations: {
+		increment( state, num ) {
+			return state += num
+		}
+	},
+	getters: {
+		absolute(state) {
+			return Math.abs( state )
+		}
+	}
 } )
 ```
 
@@ -72,8 +76,8 @@ Execute the mutation. Asynchronous processing can be placed on the action.
 Pass the mutation name to the function of the first argument of the action. The payload is provided from the second argument.
 
 ```js
-increment: ( commit, num = 1 ) => {
-    commit( 'increment', num )
+increment( commit, num = 1 ) {
+	commit( 'increment', num )
 }
 ```
 
@@ -82,8 +86,8 @@ If the third argument of commit is false, it does not provide state.
 In this case, the state passed to the subscriber is `null`.
 
 ```js
-increment: ( commit, num = 1 ) => {
-    commit( 'increment', num, false )
+increment( commit, num = 1 ) {
+	commit( 'increment', num, false )
 }
 ```
 
@@ -96,7 +100,9 @@ It will receive the current state and payload and return the new value.
 The state is changed and the main thread is notified.
 
 ```js
-increment: ( state, num ) => state += num
+increment( state, num ) {
+	return state += num
+}
 ```
 
 ATTENTION
@@ -107,16 +113,18 @@ ATTENTION
 Getters gets state by calculation.
 
 ```js
-absolute: state => Math.abs( state )
+absolute(state) {
+	return Math.abs( state )
+}
 ```
 
 An option is provided for the second argument, and another Getter is provided for the third argument.
 
 ```js
-absolute: ( state, options, getters ) => {
-    // state: Current state
-    // options: Some option
-    // getters: All Getters in this store
+absolute( state, options, getters ) {
+	// state: Current state
+	// options: Some option
+	// getters: All Getters in this store
 }
 ```
 
@@ -132,17 +140,17 @@ Mutation and action belong to one store.
 
 If you want to dispatch to multiple stores at the same time, you can use the manager.
 
-It can be registered using `worker.registerManager()`.
+It can be registered using `worker.addManager()`.
 
 ```js
 import { worker } from 'businessman'
 
-worker.registerManager( {
-    type: 'countUpMessage',
-    handler: ( stores, num = 1 ) => {
-        stores.counter.dispatch( 'increment', num )
-        stores.message.dispatch( 'update', `${num} has been added to the counter` )
-    }
+worker.addManager( {
+	type: 'countUpMessage',
+	handler( stores, num = 1 ) {
+		stores.counter.dispatch( 'increment', num )
+		stores.message.dispatch( 'update', `${num} has been added to the counter` )
+	}
 } )
 ```
 
@@ -167,20 +175,24 @@ When added to the source of the Create Store as shown earlier, it becomes as fol
 ```js
 import { worker } from 'businessman'
 
-worker.registerStore( {
-    type: 'counter',
-    state: 0,
-    actions: {
-        increment: ( commit, num = 1 ) => {
-            commit( 'increment', num )
-        }
-    },
-    mutations: {
-        increment: ( state, num ) => state += num
-    },
-    getters: {
-        absolute: state => Math.abs( state )
-    }
+worker.addStore( {
+	type: 'counter',
+	state: 0,
+	actions: {
+		increment( commit, num = 1 ) {
+			commit( 'increment', num )
+		}
+	},
+	mutations: {
+		increment( state, num ) {
+			return state += num
+		}
+	},
+	getters: {
+		absolute(state) {
+			return Math.abs( state )
+		}
+	}
 } )
 
 worker.start()
@@ -209,7 +221,7 @@ Receives an array of store and manager types as payload.
 import { subscribe } from 'businessman'
 
 subscribe( 'INIT', data => {
-    console.log( data ) // { stores: [...], managers: [...] }
+	console.log( data ) // { stores: [...], managers: [...] }
 } )
 ```
 
@@ -221,7 +233,7 @@ import { dispatch, subscribe } from 'businessman'
 dispatch( 'counter', 'increment', 1 )
 
 subscribe( 'counter', state => {
-    console.log( state ) // 1
+	console.log( state ) // 1
 } )
 ```
 
@@ -246,13 +258,13 @@ import { getState } from 'businessman'
 // Get state with `default` getter
 getState( 'counter' )
 .then( state => {
-    console.log( state )
+	console.log( state )
 } )
 
 // You can also specify Getter.
 getState( 'counter', 'absolute' )
 .then( state => {
-    console.log( state )
+	console.log( state )
 } )
 ```
 
@@ -267,7 +279,7 @@ import { getAllState } from 'businessman'
 
 getAllState()
 .then( state => {
-    console.log( state )
+	console.log( state )
 } )
 ```
 

@@ -1,47 +1,53 @@
 import {worker} from '../src/businessman'
 
-worker.registerStore({
+worker.addStore({
 	type: 'counter',
 	state: 0,
 	mutations: {
-		increment: (state, num) => {
+		increment(state, num) {
 			let n = state += num
 			return n
 		},
-		set: (state, num) => num
+		set(state, num) {
+			return num
+		}
 	},
 	actions: {
-		increment: (commit, num = 1) => {
+		increment(commit, num = 1) {
 			commit('increment', num)
 		},
-		set: (commit, num = 0) => {
+		set(commit, num = 0) {
 			commit('set', num)
 		},
-		silentSet: (commit, num = 0) => {
+		silentSet(commit, num = 0) {
 			commit('set', num, false)
 		}
 	}
 })
 
-worker.registerStore({
+worker.addStore({
 	type: 'message',
 	state: '',
 	getters: {
-		wordCount: state => state.length
+		wordCount(state) {
+			return state.length
+		}
 	},
 	mutations: {
-		set: (state, mes) => mes
+		set(state, mes) {
+			return mes
+		}
 	},
 	actions: {
-		set: (commit, mes = '') => {
+		set(commit, mes = '') {
 			commit('set', mes)
 		}
 	}
 })
 
-worker.registerManager({
+worker.addManager({
 	type: 'countUpMessage',
-	handler: (stores, num = 1) => {
+	handler(stores, num = 1) {
 		stores.counter.dispatch('increment', num)
 		stores.message.dispatch('set', `${num} has been added to the counter`)
 	}

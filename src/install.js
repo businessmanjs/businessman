@@ -1,9 +1,9 @@
 import {trigger} from './util'
 import {GETTER, CLIENT, ALLSTATE} from './types/observer'
 
-export default (path, worker) => {
+export default path => {
 	try {
-		worker = new Worker(path)
+		const worker = new Worker(path)
 		worker.onmessage = m => trigger(m.data, (m.data.allState ? ALLSTATE : m.data.getter ? GETTER : CLIENT))
 		return worker
 	} catch (err) {

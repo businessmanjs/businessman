@@ -5,8 +5,8 @@ import {pack} from './util'
 import INIT from './types/built-in'
 import {DISPATCH, OPERATE, GET_STATE, GET_ALL_STATE} from './types/api'
 
-let stores = {}
-let managers = {}
+const stores = {}
+const managers = {}
 
 const worker = {
 	start: () => {
@@ -33,7 +33,7 @@ const worker = {
 		}
 		postMessage(pack({type: INIT, payload: {stores: Object.keys(stores), managers: Object.keys(managers)}}))
 	},
-	registerStore: config => {
+	addStore: config => {
 		const store = new Store(config)
 		const {
             type
@@ -42,7 +42,7 @@ const worker = {
 			stores[type] = store
 		}
 	},
-	registerManager: config => {
+	addManager: config => {
 		const {
             type,
             handler

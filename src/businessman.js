@@ -10,7 +10,7 @@ import _getAllState from './get-all-state'
 let businessmanWoker = null
 
 const install = path => {
-	businessmanWoker = _install(path, businessmanWoker)
+	businessmanWoker = _install(path)
 }
 const dispatch = (storeType, actionType, payload) => _dispatch(storeType, actionType, payload, businessmanWoker)
 const operate = (managerType, payload) => _operate(managerType, payload, businessmanWoker)
