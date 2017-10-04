@@ -31,6 +31,13 @@ worker.addStore({
 	getters: {
 		wordCount(state) {
 			return state.length
+		},
+		wordSlice(state, opt) {
+			const {
+				begin,
+				end
+			} = opt
+			return state.slice(begin, end)
 		}
 	},
 	mutations: {

@@ -123,6 +123,57 @@ describe('Businessman Specs', () => {
 		})
 	})
 
+	it('Provide argument and get store state', done => {
+		let i = 0
+		const finish = () => {
+			i++
+			if (i === 6) {
+				done()
+			}
+		}
+		dispatch('message', 'set', '1234567890')
+		getState('message', 'wordSlice', {begin: 0, end: 1}).then(state => {
+			expect(state).to.be('1')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 2}).then(state => {
+			expect(state).to.be('12')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 3}).then(state => {
+			expect(state).to.be('123')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 4}).then(state => {
+			expect(state).to.be('1234')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 5}).then(state => {
+			expect(state).to.be('12345')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 6}).then(state => {
+			expect(state).to.be('123456')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 7}).then(state => {
+			expect(state).to.be('1234567')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 8}).then(state => {
+			expect(state).to.be('12345678')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 9}).then(state => {
+			expect(state).to.be('123456789')
+			finish()
+		})
+		getState('message', 'wordSlice', {begin: 0, end: 10}).then(state => {
+			expect(state).to.be('1234567890')
+			finish()
+		})
+	})
+
 	it('Execute action crossed to multiple stores by manager', done => {
 		operate('countUpMessage', 1)
 		subscribe('counter', state => {
