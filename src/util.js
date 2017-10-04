@@ -6,7 +6,7 @@ observer.register(CLIENT)
 observer.register(ALLSTATE)
 
 export const trigger = function (data, obs = CLIENT) {
-	observer.trigger(obs, data.type, data.payload, data.mutation, data.getter)
+	observer.trigger(obs, data.type, data.payload, data.mutation, data.getter, data.id)
 }
 
 export const on = function (type, cb, obs = CLIENT) {
@@ -27,9 +27,10 @@ export const pack = function (options) {
 		payload = null,
 		mutation = null,
 		getter = null,
-		allState = null
+		allState = null,
+		id = null
 	} = options
-	return {type: type, payload: payload, mutation: mutation, getter: getter, allState: allState}
+	return {type, payload, mutation, getter, allState, id}
 }
 
 export const assign = function (target, sources) {
