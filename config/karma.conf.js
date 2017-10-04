@@ -14,7 +14,8 @@ module.exports = function (config) {
 				pattern: 'dist/test-worker.js',
 				included: false
 			},
-			'https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.js'
+			'https://cdnjs.cloudflare.com/ajax/libs/es6-promise/4.0.5/es6-promise.auto.js',
+			'https://cdnjs.cloudflare.com/ajax/libs/core-js/2.4.0/shim.min.js'
 		],
 		proxies: {
 			'/dist/': '/base/dist/'
