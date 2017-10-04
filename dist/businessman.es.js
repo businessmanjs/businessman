@@ -48,7 +48,7 @@ observable.register(ALLSTATE);
 var trigger = function (data, obs) {
 	if ( obs === void 0 ) obs = CLIENT;
 
-	observable.trigger(obs, data.type, data.payload, data.mutation, data.getter);
+	observable.trigger(obs, data.type, data.payload, data.mutation, data.getter, data.id);
 };
 
 var on = function (type, cb, obs) {
@@ -73,7 +73,8 @@ var pack = function (options) {
 	var mutation = options.mutation; if ( mutation === void 0 ) mutation = null;
 	var getter = options.getter; if ( getter === void 0 ) getter = null;
 	var allState = options.allState; if ( allState === void 0 ) allState = null;
-	return {type: type, payload: payload, mutation: mutation, getter: getter, allState: allState}
+	var id = options.id; if ( id === void 0 ) id = null;
+	return {type: type, payload: payload, mutation: mutation, getter: getter, allState: allState, id: id}
 };
 
 var assign = function (target, sources) {
@@ -185,8 +186,9 @@ var getState$2 = function (stores, data) {
 	var store = data[0];
 	var type = data[1];
 	var payload = data[2];
+	var id = data[3];
 	var get = stores[store].getState(type, payload);
-	postMessage(pack({type: store, payload: get, getter: type}));
+	postMessage(pack({type: store, payload: get, getter: type, id: id}));
 };
 
 var DISPATCH = 'dispatch';
@@ -278,22 +280,35 @@ var _unsubscribe = function (type, cb) {
 	off(type, cb);
 };
 
+var id = 0;
+var list = [];
+
 var _getState = function (storeType, getter, options, worker) {
 	if ( getter === void 0 ) getter = 'default';
 
 	return new Promise(function (resolve, reject) {
-		var subscriber = function (state, m, got) {
-			if (got !== getter) {
-				return
+		id++;
+		var subscriber = function (id, getter) {
+			return function (state, _, got, _id) {
+				if (_id !== id || got !== getter) {
+					return
+				}
+				var index = list.findIndex(function (l) { return l.id === id; });
+				if (index > -1) {
+					var o = list[index];
+					off(storeType, o.listener, GETTER);
+					list.splice(o, 1);
+					resolve(state);
+				}
 			}
-			off(storeType, subscriber, GETTER);
-			resolve(state);
 		};
+		var listener = subscriber(id, getter);
+		list.push({id: id, listener: listener});
 
-		on(storeType, subscriber, GETTER);
+		on(storeType, listener, GETTER);
 
 		try {
-			worker.postMessage([GET_STATE, storeType, getter, options]);
+			worker.postMessage([GET_STATE, storeType, getter, options, id]);
 		} catch (err) {
 			off(storeType, subscriber, GETTER);
 			reject(err);
