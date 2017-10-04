@@ -47,4 +47,3 @@ jspm_packages
 .yarn-integrity
 
 dist/test-*.js
-package-lock.json
